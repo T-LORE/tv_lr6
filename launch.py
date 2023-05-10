@@ -16,7 +16,9 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.mode = 0
         self.currentArray = []
+        self.currentIntervals = []
         
         #Как записывается формула: r"$Твоя формула$"
         qpixmap = mathTex_to_QPixmap(r"$P_{n} (m) = C^{m}_{n}*p^{m}*q^{n-m} $", 20)
@@ -41,6 +43,20 @@ class MainWindow(QMainWindow):
         self.ui.frequencyPolygonBtn.clicked.connect(self.generateFrequencyPolygon)
         self.ui.relativeFrequencyPolygonBtn.clicked.connect(self.generateRelativeFrequencyPolygon)
         self.ui.empiricalFunctionBtn.clicked.connect(self.generateEmpiricalFunction)
+        self.ui.firstTask.clicked.connect(lambda x: (self.setCurrentMode(0)))
+        self.ui.secondTask.clicked.connect(lambda x: (self.setCurrentMode(1)))
+        
+        self.setCurrentMode(0)
+        
+    @Slot()
+    def setCurrentMode(self, newMode: str):
+        self.mode = newMode
+        if self.mode == 0:
+            self.ui.stackedWidget.setCurrentWidget(self.ui.page_1)
+        elif self.mode == 1:
+            self.ui.stackedWidget.setCurrentWidget(self.ui.page_2)
+            
+        print(f"Changed mode to { newMode }")
         
     @Slot()    
     def openFileBtnClicked(self):
@@ -49,12 +65,31 @@ class MainWindow(QMainWindow):
         if fileName:
             #Открытие файла
             file = open(fileName, 'r')
-            #Чтение массива целых чисел из файла
-            self.currentArray = np.loadtxt(file)
+            #Чтение данных из файла
+            if self.mode == 0 or self.mode == 1:
+                #Чтение массива целых чисел из файла
+                self.currentArray = np.loadtxt(file)
+            elif self.mode == 2:
+                #Чтение интервалов
+                self.currentIntervals = np.loadtxt(file)
+            
             #Закрытие файла
             file.close()
-            #Вывод массива чисел в виджет через заапятую
-            self.ui.fileBuffer.setText(np.array2string(self.currentArray, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[',''))
+            
+            #Вывод содержимого файла
+            if self.mode == 0:
+                #Вывод массива чисел в виджет через запятую
+                self.ui.fileBuffer.setText(np.array2string(self.currentArray, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[',''))
+            elif self.mode == 1 or self.mode == 2:
+                #Вывод интервала
+                intervalStr = ""
+                for pair in self.currentIntervals:
+                    intervalStr += np.array2string(pair, formatter={'float_kind':lambda x: "%.1f" % x})
+                    intervalStr += ' '
+                self.ui.fileBuffer.setText(intervalStr)
+            
+            print(np.array_split(self.currentArray, 3))
+            
             #Вывод сообщения в консоль
             print("Файл успешно открыт")
             
