@@ -45,6 +45,7 @@ class MainWindow(QMainWindow):
         self.ui.empiricalFunctionBtn.clicked.connect(self.generateEmpiricalFunction)
         self.ui.firstTask.clicked.connect(lambda x: (self.setCurrentMode(0)))
         self.ui.secondTask.clicked.connect(lambda x: (self.setCurrentMode(1)))
+        self.ui.thirdTask.clicked.connect(lambda x: (self.setCurrentMode(2)))
         
         self.setCurrentMode(0)
         
@@ -55,6 +56,8 @@ class MainWindow(QMainWindow):
             self.ui.stackedWidget.setCurrentWidget(self.ui.page_1)
         elif self.mode == 1:
             self.ui.stackedWidget.setCurrentWidget(self.ui.page_2)
+        elif self.mode == 2:
+            self.ui.stackedWidget.setCurrentWidget(self.ui.page_3)
             
         print(f"Changed mode to { newMode }")
         

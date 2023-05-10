@@ -206,7 +206,7 @@ QHeaderView::section {
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="thirdTask">
          <property name="text">
           <string>Задание 3</string>
          </property>
@@ -231,7 +231,7 @@ QHeaderView::section {
     <item row="0" column="1">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page_1">
        <layout class="QGridLayout" name="gridLayout_2">
