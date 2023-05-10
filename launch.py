@@ -24,20 +24,14 @@ class MainWindow(QMainWindow):
         x = mathTex_to_QPixmap(r"$\overline{X_{в}} = \frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", 20)
         self.ui.formulaX.setPixmap(x)
         #Формула выборочной дисперсии
-        d = mathTex_to_QPixmap(r"$\overline{D_{в}} = \overline{X^{2}} - (\overline{X_{в}})^{2}$", 20)
+        d = mathTex_to_QPixmap(r"$D_{в} = X^{2} - (\overline{X_{в}})^{2}$", 20)
         self.ui.formulaD.setPixmap(d)
         #Формула выборочного среднего квадратического отклонения
-        sigma = mathTex_to_QPixmap(r"$\sigma_{в} = \sqrt{\overline{D_{в}}}$", 20)
+        sigma = mathTex_to_QPixmap(r"$\sigma_{в} = \sqrt{D_{в}}$", 20)
         self.ui.formulaSigma.setPixmap(sigma)
         #Формула выборочного среднего квадратического отклонения
         s = mathTex_to_QPixmap(r"$S_{в} = \sqrt{D_{в}}$", 20)
         self.ui.formulaS.setText("S = что это такое?")
-         
-        
-        #self.ui.photoBernuliFirstFormulaType1.setPixmap(qpixmap) 
-
-        #Добавить слайдер управления таблицей по горизонтали
-        self.ui.rowsTable.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         
         #поменять высоту ячеек в таблице
         self.ui.rowsTable.verticalHeader().setDefaultSectionSize(40)
@@ -56,11 +50,11 @@ class MainWindow(QMainWindow):
             #Открытие файла
             file = open(fileName, 'r')
             #Чтение массива целых чисел из файла
-            self.currentArray = np.loadtxt(file, dtype=int)
+            self.currentArray = np.loadtxt(file)
             #Закрытие файла
             file.close()
             #Вывод массива чисел в виджет через заапятую
-            self.ui.fileBuffer.setText(self.currentArray.__str__().replace('[', '').replace(']', '').replace('\n','').replace(' ', ', ').replace(',,', ','))
+            self.ui.fileBuffer.setText(np.array2string(self.currentArray, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[',''))
             #Вывод сообщения в консоль
             print("Файл успешно открыт")
             
@@ -81,14 +75,10 @@ class MainWindow(QMainWindow):
     
     @Slot()
     def showVariationRow(self):
-        variationRow = getVariationRow(self.currentArray)
-       
-        
+        self.variationRow = getVariationRow(self.currentArray)
        
         #Вывод вариационного ряда
-        self.ui.rowsTable.setColumnCount(len(variationRow))
-        for i in range(len(variationRow)):
-            self.ui.rowsTable.setItem(0, i, QTableWidgetItem(str(variationRow[i])))
+        self.ui.variationRowLine.setText(np.array2string(self.variationRow, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[',''))
         print("Вариационный ряд успешно выведен")
            
     @Slot()
@@ -96,25 +86,27 @@ class MainWindow(QMainWindow):
         frequencyRow = getFrequencyRow(self.currentArray, RowType.FREQUENCY)
         relativeFrequencyRow = getFrequencyRow(self.currentArray, RowType.RELATIVE_FREQUENCY)
         
+        self.ui.rowsTable.setColumnCount(len(frequencyRow['numbers']))
+        
         #Вывод чисел
         for i in range(len(frequencyRow['numbers'])):
-            self.ui.rowsTable.setItem(1, i, QTableWidgetItem(str(frequencyRow['numbers'][i])))
+            self.ui.rowsTable.setItem(0, i, QTableWidgetItem(str(frequencyRow['numbers'][i])))
         print("Числа успешно выведены")
         
         
         #Вывод статистического ряда частот
         for i in range(len(frequencyRow['frequencies'])):
-            self.ui.rowsTable.setItem(2, i, QTableWidgetItem(str(frequencyRow['frequencies'][i])))
+            self.ui.rowsTable.setItem(1, i, QTableWidgetItem(str(frequencyRow['frequencies'][i])))
         print("Статистический ряд частот успешно выведен")
         
         #Вывод статистического ряда относительных частот в виде натуральной дроби
         for i in range(len(relativeFrequencyRow['numerators'])):
             numerator = relativeFrequencyRow['numerators'][i]
             denominator = relativeFrequencyRow['denominator']
-            naturalFraction = mathTex_to_QPixmap(r"$\frac{" + str(numerator) + "}{" + str(denominator) + "}$", 20)
+            naturalFraction = mathTex_to_QPixmap(r"$\frac{" + str(numerator) + "}{" + str(denominator) + "}$", 15)
             newItem = QTableWidgetItem("")
             newItem.setData(Qt.DecorationRole, naturalFraction)
-            self.ui.rowsTable.setItem(3, i, newItem)
+            self.ui.rowsTable.setItem(2, i, newItem)
         print("Статистический ряд относительных частот успешно выведен")
     
     @Slot()
@@ -200,7 +192,7 @@ class MainWindow(QMainWindow):
             'y': []
         }
         for i in range(len(x)-1):
-            empiricalFunction['start'].append(x[i]) #= [[x[i], x[i+1]], sum(relativefrequencyRow['numerators'][:i+1])/relativefrequencyRow['denominator']]
+            empiricalFunction['start'].append(x[i]) 
             empiricalFunction['end'].append(x[i+1])
             empiricalFunction['y'].append(sum(relativefrequencyRow['numerators'][:i+1])/relativefrequencyRow['denominator'])
         #Построение разорванного графика.
@@ -210,6 +202,8 @@ class MainWindow(QMainWindow):
         for i in range(len(empiricalFunction['y'])):
             self.plotWidget.plot([empiricalFunction['start'][i]],[empiricalFunction['y'][i]],pen=pg.mkPen(color=(0, 0, 0), width=2), symbol='o', symbolPen=pg.mkPen(color=(0, 0, 0), width=2), symbolBrush='w', symbolSize=10, antialias=True)
             self.plotWidget.plot([empiricalFunction['start'][i], empiricalFunction['end'][i]], [empiricalFunction['y'][i], empiricalFunction['y'][i]], pen=pg.mkPen(color=(0, 0, 0), width=2))
+        
+        
         
     @Slot()
     def showD(self):
