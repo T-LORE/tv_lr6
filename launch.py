@@ -40,6 +40,8 @@ class MainWindow(QMainWindow):
         
         #Прописанные коннекты
         self.ui.openFileBtn.clicked.connect(self.openFileBtnClicked)
+        self.ui.openFileBtn_2.clicked.connect(self.openFileBtnClicked)
+        self.ui.openFileBtn_3.clicked.connect(self.openFileBtnClicked)
         self.ui.frequencyPolygonBtn.clicked.connect(self.generateFrequencyPolygon)
         self.ui.relativeFrequencyPolygonBtn.clicked.connect(self.generateRelativeFrequencyPolygon)
         self.ui.empiricalFunctionBtn.clicked.connect(self.generateEmpiricalFunction)
@@ -82,7 +84,7 @@ class MainWindow(QMainWindow):
             #Вывод содержимого файла
             if self.mode == 0:
                 #Вывод массива чисел в виджет через запятую
-                self.ui.fileBuffer.setText(np.array2string(self.currentArray, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[',''))
+                self.ui.fileBuffer.setText(np.array2string(self.currentArray, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[','').replace(']', ''))
             elif self.mode == 1 or self.mode == 2:
                 #Вывод интервала
                 intervalStr = ""
@@ -116,7 +118,7 @@ class MainWindow(QMainWindow):
         self.variationRow = getVariationRow(self.currentArray)
        
         #Вывод вариационного ряда
-        self.ui.variationRowLine.setText(np.array2string(self.variationRow, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[',''))
+        self.ui.variationRowLine.setText(np.array2string(self.variationRow, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[','').replace(']', ''))
         print("Вариационный ряд успешно выведен")
            
     @Slot()

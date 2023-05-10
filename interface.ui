@@ -734,7 +734,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
              </widget>
             </item>
             <item>
-             <widget class="QTextEdit" name="textEdit">
+             <widget class="QTextEdit" name="variationRowLine">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                 <horstretch>0</horstretch>
@@ -767,7 +767,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
       <widget class="QWidget" name="page_2">
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
-         <widget class="QPushButton" name="openFileBtn_3">
+         <widget class="QPushButton" name="openFileBtn_2">
           <property name="text">
            <string>Открыть файл</string>
           </property>
@@ -1529,6 +1529,13 @@ li.checked::marker { content: &quot;\2612&quot;; }
         </item>
         <item row="0" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_37">
+          <item>
+           <widget class="QPushButton" name="openFileBtn_3">
+            <property name="text">
+             <string>Открыть файл</string>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QLabel" name="label_56">
             <property name="layoutDirection">
