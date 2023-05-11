@@ -160,3 +160,9 @@ cython_debug/
 #.idea/
 
 mainwindow.py
+
+# tests
+testData/
+
+# vsCode
+.vscode/
