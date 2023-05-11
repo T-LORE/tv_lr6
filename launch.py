@@ -39,9 +39,9 @@ class MainWindow(QMainWindow):
         self.ui.rowsTable.verticalHeader().setDefaultSectionSize(40)
         
         #Прописанные коннекты
-        self.ui.openFileBtn.clicked.connect(self.openFileBtnClicked)
-        self.ui.openFileBtn_2.clicked.connect(self.openFileBtnClicked)
-        self.ui.openFileBtn_3.clicked.connect(self.openFileBtnClicked)
+        self.ui.openFileBtn.clicked.connect(self.openFileBtnClicked_1)
+        self.ui.openFileBtn_2.clicked.connect(self.openFileBtnClicked_2)
+        self.ui.openFileBtn_3.clicked.connect(self.openFileBtnClicked_3)
         self.ui.frequencyPolygonBtn.clicked.connect(self.generateFrequencyPolygon)
         self.ui.relativeFrequencyPolygonBtn.clicked.connect(self.generateRelativeFrequencyPolygon)
         self.ui.empiricalFunctionBtn.clicked.connect(self.generateEmpiricalFunction)
@@ -63,37 +63,23 @@ class MainWindow(QMainWindow):
             
         print(f"Changed mode to { newMode }")
         
+    
     @Slot()    
-    def openFileBtnClicked(self):
+    def openFileBtnClicked_1(self):
         #Выбор файла с помощью диалогового окна QfileDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Текстовый файл (*.txt)")
         if fileName:
             #Открытие файла
             file = open(fileName, 'r')
-            #Чтение данных из файла
-            if self.mode == 0 or self.mode == 1:
-                #Чтение массива целых чисел из файла
-                self.currentArray = np.loadtxt(file)
-            elif self.mode == 2:
-                #Чтение интервалов
-                self.currentIntervals = np.loadtxt(file)
             
+            #Чтение массива целых чисел из файла
+            self.currentArray = np.loadtxt(file)
+           
             #Закрытие файла
             file.close()
             
-            #Вывод содержимого файла
-            if self.mode == 0:
-                #Вывод массива чисел в виджет через запятую
-                self.ui.fileBuffer.setText(np.array2string(self.currentArray, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[','').replace(']', ''))
-            elif self.mode == 1 or self.mode == 2:
-                #Вывод интервала
-                intervalStr = ""
-                for pair in self.currentIntervals:
-                    intervalStr += np.array2string(pair, formatter={'float_kind':lambda x: "%.1f" % x})
-                    intervalStr += ' '
-                self.ui.fileBuffer.setText(intervalStr)
-            
-            print(np.array_split(self.currentArray, 3))
+            #Вывод массива чисел в виджет через запятую
+            self.ui.fileBuffer.setText(np.array2string(self.currentArray, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[','').replace(']', ''))
             
             #Вывод сообщения в консоль
             print("Файл успешно открыт")
@@ -111,7 +97,120 @@ class MainWindow(QMainWindow):
             #Вывести сигма выборочное
             self.showSigma()
             #Вывести результат S
+            self.showS()            
+    
+    @Slot()    
+    def openFileBtnClicked_2(self):
+        #Выбор файла с помощью диалогового окна QfileDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Текстовый файл (*.txt)")
+        if fileName:
+            #Открытие файла
+            file = open(fileName, 'r')
+            
+            #Чтение массива целых чисел из файла
+            self.currentArray = np.loadtxt(file)
+            
+            #Закрытие файла
+            file.close()
+            
+            #Вывод массива чисел в виджет через запятую
+            self.ui.fileBuffer.setText(np.array2string(self.currentArray, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[','').replace(']', ''))
+            
+            #Получить кол-во интервалов от пользователя
+            
+            #Разделить массив на интервалы
+            print(np.array_split(self.currentArray, 3))
+            
+            #Вывод сообщения в консоль
+            print("Файл успешно открыт")
+            
+            #Очистить таблицу интервального ряда
+            
+            #Посчитать n для каждого интервала
+                
+            #Заполняем таблицу интервального ряда
+            
+            #Очистить таблицу группированного ряда
+            
+            #Находим центры интервалов
+            
+            #Заполняем таблицу группированого ряда
+            
+            #Построить полигон вероятностей
+            
+            #Найти эмпирическую функцию
+            #Построить график эмпирической функции
+            
+             
+            
+            
+            #Вывести вариационный ряд
+            self.showVariationRow()
+            #Вывести статистический ряд частот
+            self.showFrequencyRows()
+            #Вывести D выборочное
+            self.showD()
+            #Вывести x выборочное
+            self.showX()
+            #Вывести сигма выборочной
+            self.showSigma()
+            #Вывести результат S
             self.showS()
+            
+    @Slot()    
+    def openFileBtnClicked_3(self):
+        #Выбор файла с помощью диалогового окна QfileDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Текстовый файл (*.txt)")
+        if fileName:
+            #Открытие файла
+            file = open(fileName, 'r')
+            
+            #Чтение интервалов и их n из файла
+            self.currentIntervals = np.loadtxt(file)
+            
+            #Закрытие файла
+            file.close()
+            
+            #Вывод интервала чисел в виджет через запятую
+            
+            #Получить интервалы от пользователя
+            
+            #Вывод сообщения в консоль
+            print("Файл успешно открыт")
+            
+            #Очистить таблицу интервального ряда
+            
+            #Посчитать n для каждого интервала
+                
+            #Заполняем таблицу интервального ряда
+            
+            #Очистить таблицу группированного ряда
+            
+            #Находим центры интервалов
+            
+            #Заполняем таблицу группированого ряда
+            
+            #Построить полигон вероятностей
+            
+            #Найти эмпирическую функцию
+            #Построить график эмпирической функции
+            
+             
+            
+            
+            #Вывести вариационный ряд
+            self.showVariationRow()
+            #Вывести статистический ряд частот
+            self.showFrequencyRows()
+            #Вывести D выборочное
+            self.showD()
+            #Вывести x выборочное
+            self.showX()
+            #Вывести сигма выборочной
+            self.showSigma()
+            #Вывести результат S
+            self.showS()
+            
     
     @Slot()
     def showVariationRow(self):
