@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
         self.mode = 0
         self.currentArray = []
         self.currentIntervals = []
-        
+        self.minFrequency = 5
         #Как записывается формула: r"$Твоя формула$"
         qpixmap = mathTex_to_QPixmap(r"$P_{n} (m) = C^{m}_{n}*p^{m}*q^{n-m} $", 20)
         #Формула среднего выборочного
@@ -54,6 +54,13 @@ class MainWindow(QMainWindow):
         self.ui.firstTask.clicked.connect(lambda x: (self.setCurrentMode(0)))
         self.ui.secondTask.clicked.connect(lambda x: (self.setCurrentMode(1)))
         self.ui.thirdTask.clicked.connect(lambda x: (self.setCurrentMode(2)))
+        
+        self.ui.frequencyHistogramBtn_2.clicked.connect(self.frequencyHistogram2)
+        self.ui.relativeFrequencyHistogramBtn_2.clicked.connect(self.relativeFrequencyHistogram2)
+        self.ui.empiricalIntervalFunctionBtn_2.clicked.connect(self.empiricalIntervalFunction2)
+        self.ui.empiricalGroupFunctionBtn_2.clicked.connect(self.empiricalGroupFunction2)
+        self.ui.frequencyPolygonBtn_2.clicked.connect(self.frequencyPolygon2)
+        self.ui.relativeFrequencyPolygonBtn_2.clicked.connect(self.relativeFrequencyPolygon2)
         
         self.setCurrentMode(0)
         
@@ -120,11 +127,26 @@ class MainWindow(QMainWindow):
             file.close()
             
             #Вывод массива чисел в виджет через запятую
-            self.ui.fileBuffer.setText(np.array2string(self.currentArray, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[','').replace(']', ''))                      
+            self.ui.fileBuffer_2.setText(np.array2string(self.currentArray, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[','').replace(']', ''))                      
                         
             #Получить кол-во интервалов от пользователя
-            self.intervalCount = int(self.ui.userIntervalCount.text())
-                          
+            try:
+                self.intervalCount = int(self.ui.userIntervalCount.text())
+            except ValueError:
+                print("Неверно введено кол-во интервалов")
+                return
+            
+            try:
+                # self.intervalRow = {
+                # 'start' : [],
+                # 'end' : [],
+                # 'frequency' : []
+                # }
+                self.intervalRow = split(self.currentArray, self.intervalCount, self.minFrequency)
+            except ValueError as e:
+                print(e)
+                return
+            print("intervalRow: ", self.intervalRow)      
             #Вывести интервальный ряд
             self.showIntervalRow()
             
@@ -324,75 +346,195 @@ class MainWindow(QMainWindow):
         #Очистка таблицы
         self.ui.intervalRow2.clear()
         
+        #Добавить столбцы в таблицу
+        self.ui.intervalRow2.setColumnCount(len(self.intervalRow['start']))
         
-        
-        #Получить интервалы
-        try:
-            self.intervalRow = split(self.currentArray, self.intervalCount)
-        except ValueError as e:
-            print(e)
-            return
-        else: 
-            #
-            print(self.intervalRow)
-            #Добавить столбцы в таблицу
-            self.ui.intervalRow2.setColumnCount(len(self.intervalRow['start']))
-            #Заполнить первую строку таблицы - интервалы [x1,x2]
-            for i in range (len(self.intervalRow['start'])):
-                string = "[" + str(self.intervalRow['start'][i]) + "," + str(self.intervalRow['end'][i]) + "]"
-                newItem = QTableWidgetItem(string)
-                self.ui.intervalRow2.setItem(0, i, newItem)
-            #Заполнить вторую строку таблицы - частоты интервалов
-            for i in range (len(self.intervalRow['start'])):
-                newItem = QTableWidgetItem(str(self.intervalRow['frequency'][i]))
-                self.ui.intervalRow2.setItem(1, i, newItem)
-                
-            #Заполнить третью строку таблицы - относительные частоты в виде натуральной дроби
-            for i in range(len(self.intervalRow['start'])):
-                numerator = self.intervalRow['frequency'][i]
-                denominator = len(self.currentArray)
-                naturalFraction = mathTex_to_QPixmap(r"$\frac{" + str(numerator) + "}{" + str(denominator) + "}$", 15)
-                newItem = QTableWidgetItem("")
-                newItem.setData(Qt.DecorationRole, naturalFraction)
-                self.ui.intervalRow2.setItem(2, i, newItem)
-            print("Интервал частот успешно выведен")
+        #Заполнить первую строку таблицы - интервалы [x1,x2]
+        for i in range (len(self.intervalRow['start'])):
+            string = "[" + str(self.intervalRow['start'][i]) + "," + str(self.intervalRow['end'][i]) + "]"
+            newItem = QTableWidgetItem(string)
+            self.ui.intervalRow2.setItem(0, i, newItem)
+        #Заполнить вторую строку таблицы - частоты интервалов
+        for i in range (len(self.intervalRow['start'])):
+            newItem = QTableWidgetItem(str(self.intervalRow['frequency'][i]))
+            self.ui.intervalRow2.setItem(1, i, newItem)
+            
+        #Заполнить третью строку таблицы - относительные частоты в виде натуральной дроби
+        for i in range(len(self.intervalRow['start'])):
+            numerator = self.intervalRow['frequency'][i]
+            denominator = len(self.currentArray)
+            naturalFraction = mathTex_to_QPixmap(r"$\frac{" + str(numerator) + "}{" + str(denominator) + "}$", 15)
+            newItem = QTableWidgetItem("")
+            newItem.setData(Qt.DecorationRole, naturalFraction)
+            self.ui.intervalRow2.setItem(2, i, newItem)
+            
+        #Добавить вертикальные заголовки
+        self.ui.intervalRow2.setVerticalHeaderItem(0, QTableWidgetItem("x(i);x(i+1)"))
+        self.ui.intervalRow2.setVerticalHeaderItem(1, QTableWidgetItem("n(i)"))
+        self.ui.intervalRow2.setVerticalHeaderItem(1, QTableWidgetItem("W(i)"))
+        print("Интервальный ряд частот и относительных частот успешно построен")
         
     @Slot()
     def showGroupRow(self):
-         #Очистка таблицы
+        #Очистка таблицы
         self.ui.groupRow2.clear()
+       
+        #Добавить столбцы в таблицу
+        self.ui.groupRow2.setColumnCount(len(self.intervalRow['start']))
+        #Увеличить размер ячеек
+        for i in range(len(self.intervalRow['start'])):
+            self.ui.groupRow2.setColumnWidth(i, 100)
         
-        #Получить интервалы
-        try:
-            self.intervalRow = split(self.currentArray, self.intervalCount)
-        except ValueError as e:
-            print(e)
-            return
-        else:
-            #Добавить столбцы в таблицу
-            self.ui.groupRow2.setColumnCount(len(self.intervalRow['start']))
-            #Увеличить размер ячеек
-            for i in range(len(self.intervalRow['start'])):
-                self.ui.groupRow2.setColumnWidth(i, 100)
-            #Заполнить первую строку таблицы - интервалы [x1,x2]
-            for i in range (len(self.intervalRow['start'])):
-                string = str((self.intervalRow['start'][i] + self.intervalRow['end'][i]) / 2)  
-                newItem = QTableWidgetItem(string)
-                self.ui.groupRow2.setItem(0, i, newItem)
-            #Заполнить вторую строку таблицы - частоты интервалов
-            for i in range (len(self.intervalRow['start'])):
-                newItem = QTableWidgetItem(str(self.intervalRow['frequency'][i]))
-                self.ui.groupRow2.setItem(1, i, newItem)
-                
-            #Заполнить третью строку таблицы - относительные частоты в виде натуральной дроби
-            for i in range(len(self.intervalRow['start'])):
-                numerator = self.intervalRow['frequency'][i]
-                denominator = len(self.currentArray)
-                naturalFraction = mathTex_to_QPixmap(r"$\frac{" + str(numerator) + "}{" + str(denominator) + "}$", 15)
-                newItem = QTableWidgetItem("")
-                newItem.setData(Qt.DecorationRole, naturalFraction)
-                self.ui.groupRow2.setItem(2, i, newItem)
-            print("Интервал частот успешно выведен")
+        self.groupRow = {
+            'numbers': [],
+            'numerators': [],
+            'denominator': len(self.currentArray)
+        }
+        
+        for i in range(len(self.intervalRow['start'])):
+            self.groupRow['numbers'].append((self.intervalRow['start'][i] + self.intervalRow['end'][i]) / 2)
+            self.groupRow['numerators'].append(self.intervalRow['frequency'][i])
+            
+        
+        #Заполнить первую строку таблицы - интервалы [x1,x2]
+        for i in range(len(self.groupRow['numbers'])):
+            string = str(self.groupRow['numbers'][i])  
+            newItem = QTableWidgetItem(string)
+            self.ui.groupRow2.setItem(0, i, newItem)
+        #Заполнить вторую строку таблицы - частоты интервалов
+        for i in range (len(self.groupRow['numbers'])):
+            newItem = QTableWidgetItem(str(self.groupRow['numerators'][i]))
+            self.ui.groupRow2.setItem(1, i, newItem)
+            
+        #Заполнить третью строку таблицы - относительные частоты в виде натуральной дроби
+        for i in range(len(self.groupRow['numbers'])):
+            numerator = self.groupRow['numerators'][i]
+            denominator = self.groupRow['denominator']
+            naturalFraction = mathTex_to_QPixmap(r"$\frac{" + str(numerator) + "}{" + str(denominator) + "}$", 15)
+            newItem = QTableWidgetItem("")
+            newItem.setData(Qt.DecorationRole, naturalFraction)
+            self.ui.groupRow2.setItem(2, i, newItem)
+            
+        #Добавить вертикальные заголовки
+        self.ui.groupRow2.setVerticalHeaderItem(0, QTableWidgetItem("x(i)"))
+        self.ui.groupRow2.setVerticalHeaderItem(1, QTableWidgetItem("n(i)"))
+        self.ui.groupRow2.setVerticalHeaderItem(1, QTableWidgetItem("W(i)"))
+        print("Группированный ряд частот и относительных частот успешно построен")
+            
+    @Slot()
+    def frequencyHistogram2(self):
+        # Данные для гистограммы хранятся в словаре frequencyHistogram
+        frequencyHistogram = {
+            'start': [],
+            'end': [],
+            'frequency': []
+        }
+        
+        for i in range(len(self.intervalRow['start'])):
+            frequencyHistogram['start'].append(self.intervalRow['start'][i])
+            frequencyHistogram['end'].append(self.intervalRow['end'][i])
+            frequencyHistogram['frequency'].append(self.intervalRow['frequency'][i])
+        
+        print("frequencyHistogram: ", frequencyHistogram)  
+    
+    @Slot()
+    def relativeFrequencyHistogram2(self):
+        # Данные для гистограммы хранятся в словаре relativeIntervalRow
+        relativeIntervalRow = {
+            'start': [],
+            'end': [],
+            'relativeFrequency': []
+        }
+        
+        for i in range(len(self.intervalRow['start'])):
+            relativeIntervalRow['start'].append(self.intervalRow['start'][i])
+            relativeIntervalRow['end'].append(self.intervalRow['end'][i])
+            relativeIntervalRow['relativeFrequency'].append(self.intervalRow['frequency'][i] / len(self.currentArray))
+        
+        print("relativeFrequencyHistogram2: ", relativeIntervalRow)
+    
+    @Slot()
+    def empiricalIntervalFunction2(self):
+        # Делал опираясь на это https://vk.com/im?sel=c68&z=photo246012063_457245640%2Fmail903103
+        # Данные для гистограммы хранятся в словаре intervalEmpirical
+        intervalEmpirical = {
+            'start': [],
+            'end': [],
+            'y': []
+        }
+        
+        for i in range(1, len(self.intervalRow['start'])):
+            intervalEmpirical['start'].append(self.intervalRow['start'][i])
+            intervalEmpirical['end'].append(self.intervalRow['end'][i])
+            intervalEmpirical['y'].append(sum(self.intervalRow['frequency'][:i]) / len(self.currentArray))
+        
+        # Добавить последнюю точку равную 1
+        allX = [value for value in intervalEmpirical["start"]] + [value for value in intervalEmpirical["end"]] 
+        xMinDiff = graph.minDiffInList(allX)
+        lastx = intervalEmpirical['end'][-1] 
+        intervalEmpirical['start'].append(lastx)
+        intervalEmpirical['end'].append(lastx+xMinDiff) 
+        intervalEmpirical['y'].append(1)
+        
+        print("intervalEmpirical: ", intervalEmpirical)
+        
+    
+    @Slot()
+    def empiricalGroupFunction2(self):
+        # Данные для эмпирической функции хранятся в словаре groupEmpirical
+        x = self.groupRow['numbers']
+        np.append(x, 999)
+        groupEmpirical = {
+            'start': [],
+            'end': [],
+            'y': []
+        }
+        for i in range(len(x)-1):
+            groupEmpirical['start'].append(x[i]) 
+            groupEmpirical['end'].append(x[i+1])
+            groupEmpirical['y'].append(sum(self.groupRow['numerators'][:i+1])/self.groupRow['denominator'])
+        
+        # Добавить последнюю точку равную 1
+        allX = [value for value in groupEmpirical["start"]] + [value for value in groupEmpirical["end"]] 
+        xMinDiff = graph.minDiffInList(allX)
+        lastx = groupEmpirical['end'][-1] 
+        groupEmpirical['start'].append(lastx)
+        groupEmpirical['end'].append(lastx+xMinDiff) 
+        groupEmpirical['y'].append(1)
+            
+        print("groupEmpirical: ", groupEmpirical)
+
+    
+    @Slot()
+    def frequencyPolygon2(self):
+        # Данные для гистограммы хранятся в словаре frequencyPolygon
+        
+        frequencyPolygon = {
+            'x': [],
+            'y': []
+        }
+        
+        for i in range(len(self.groupRow['numbers'])):
+            frequencyPolygon['x'].append(self.groupRow['numbers'][i])
+            frequencyPolygon['y'].append(self.groupRow['numerators'][i])
+        
+        print("frequencyPolygon2: ", frequencyPolygon)
+        
+    
+    @Slot()
+    def relativeFrequencyPolygon2(self):
+        # Данные для гистограммы хранятся в словаре relativeFrequencyPolygon
+        relativeFrequencyPolygon = {
+            'x': [],
+            'y': []
+        }
+        
+        for i in range(len(self.groupRow['numbers'])):
+            relativeFrequencyPolygon['x'].append(self.groupRow['numbers'][i])
+            relativeFrequencyPolygon['y'].append(self.groupRow['numerators'][i] / self.groupRow['denominator'])
+            
+        print("relativeFrequencyPolygon2: ", relativeFrequencyPolygon)
+        
         
 if __name__ == "__main__":
     app = QApplication()
