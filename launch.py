@@ -10,6 +10,12 @@ from workingWithRowData import getVariationRow, getFrequencyRow, RowType, getX, 
 import numpy as np
 import pyqtgraph as pg
 
+from mpl_toolkits.axisartist.axislines import SubplotZero
+import matplotlib.pyplot as plt
+import numpy as np
+
+import graphingFunctions as graph
+
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -253,41 +259,14 @@ class MainWindow(QMainWindow):
         #Получение данных из таблицы
         frequencyRow = getFrequencyRow(self.currentArray, RowType.FREQUENCY)
         
-        #Построение графика в отдельном окне
         #Получение данных для графика
         x = frequencyRow['numbers']
         y = frequencyRow['frequencies']
-        #Построение графика. Не выделять точки построения, задать цвет линии и точек
-        penLines = pg.mkPen(color=(0, 0, 0), width=2)
         
-        #График с выколотыми точками
-        # pg.plot(x, 
-        #         y, 
-        #         title='Плигон частот', 
-        #         pen=penLines, 
-        #         symbol='o', 
-        #         symbolPen=penDots,    #Цвет обводки точек
-        #         symbolBrush='w',      #Цвет заливки точек
-        #         symbolSize=10, 
-        #         background='w', 
-        #         foreground='k', 
-        #         antialias=True,
-        #         fillLevel=0,
-        #         fillOutline=True)
-        
-        pg.plot(x, 
-                y, 
-                title='Плигон частот', 
-                pen=penLines, 
-                background='w', 
-                foreground='k', 
-                antialias=True,
-                fillLevel=0,
-                fillOutline=True,
-                labels={'left': 'Частота', 'bottom': 'Число'})
-        
-        
-        
+        #Построение графика
+        graph.drawPolygonGraph(x, y, xLabel="Число", yLabel="Частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+
+                          
         #Вывод сообщения в консоль
         print("График частотного полигональной линии успешно построен")
         
@@ -298,18 +277,12 @@ class MainWindow(QMainWindow):
         #Получение данных из таблицы
         relativeFrequencyRow = getFrequencyRow(self.currentArray, RowType.RELATIVE_FREQUENCY)
         
-        pg.plot(relativeFrequencyRow['numbers'],
-                relativeFrequencyRow['numerators']/relativeFrequencyRow['denominator'],
-                title='Плигон относительных частот', 
-                pen=pg.mkPen(color=(0, 0, 0), width=2), 
-                background='w', 
-                foreground='#000000', 
-                antialias=True,
-                fillLevel=0,
-                fillOutline=True,
-                labels={'left': '<span style="color: #000">Частота</span>', 'bottom': '<span style="color: #000">Число</span>'},
-                color = '#000000')
+        #Рассчёт данных для графика
+        x = relativeFrequencyRow['numbers']
+        y = relativeFrequencyRow['numerators']/relativeFrequencyRow['denominator']
         
+        #Построение графика
+        graph.drawPolygonGraph(x, y, xLabel="Число", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
         
         #Вывод сообщения в консоль
         print("График частотной полигональной линии успешно построен")
@@ -334,14 +307,10 @@ class MainWindow(QMainWindow):
             empiricalFunction['start'].append(x[i]) 
             empiricalFunction['end'].append(x[i+1])
             empiricalFunction['y'].append(sum(relativefrequencyRow['numerators'][:i+1])/relativefrequencyRow['denominator'])
-        #Построение разорванного графика.
-
-        self.plotWidget = pg.plot(title = 'asdasd', background = 'w', foreground = 'k')
-       
-        for i in range(len(empiricalFunction['y'])):
-            self.plotWidget.plot([empiricalFunction['start'][i]],[empiricalFunction['y'][i]],pen=pg.mkPen(color=(0, 0, 0), width=2), symbol='o', symbolPen=pg.mkPen(color=(0, 0, 0), width=2), symbolBrush='w', symbolSize=10, antialias=True)
-            self.plotWidget.plot([empiricalFunction['start'][i], empiricalFunction['end'][i]], [empiricalFunction['y'][i], empiricalFunction['y'][i]], pen=pg.mkPen(color=(0, 0, 0), width=2))
-        
+            
+        #Построение разорванного графика
+        graph.drawEmpiricalGraph(empiricalFunction, xLabel="X axis", yLabel="Y axis", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+             
         
         
     @Slot()
