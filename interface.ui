@@ -231,7 +231,7 @@ QHeaderView::section {
     <item row="0" column="1">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page_1">
        <layout class="QGridLayout" name="gridLayout_2">
@@ -1427,7 +1427,7 @@ hr { height: 1px; border-width: 0; }
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_5">
+             <widget class="QPushButton" name="frequencyHistogramBtn_3">
               <property name="minimumSize">
                <size>
                 <width>300</width>
@@ -1441,12 +1441,19 @@ hr { height: 1px; border-width: 0; }
                </size>
               </property>
               <property name="text">
-               <string>График F*(x) интервального ряда</string>
+               <string>Гистограмма частот</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="empiricalFunctionBtn_6">
+             <widget class="QPushButton" name="empiricalGroupFunctionBtn_3">
+              <property name="text">
+               <string>График F*(x) эмпирической функции для групированного ряда</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="frequencyPolygonBtn_3">
               <property name="minimumSize">
                <size>
                 <width>300</width>
@@ -1460,7 +1467,7 @@ hr { height: 1px; border-width: 0; }
                </size>
               </property>
               <property name="text">
-               <string>График F*(x) группированного ряда</string>
+               <string>Полигон частот</string>
               </property>
              </widget>
             </item>
@@ -1497,7 +1504,33 @@ hr { height: 1px; border-width: 0; }
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="relativeFrequencyPolygonBtn_6">
+           <widget class="QPushButton" name="relativeFrequencyHistogramBtn_3">
+            <property name="minimumSize">
+             <size>
+              <width>300</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>300</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Гистограмма относительных частот</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="empiricalIntervalFunctionBtn_3">
+            <property name="text">
+             <string>График F*(x) эмпирической функции для интеравльного ряда</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="relativeFrequencyPolygonBtn_3">
             <property name="minimumSize">
              <size>
               <width>300</width>
@@ -1512,25 +1545,6 @@ hr { height: 1px; border-width: 0; }
             </property>
             <property name="text">
              <string>Полигон относительных частот</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="frequencyPolygonBtn_6">
-            <property name="minimumSize">
-             <size>
-              <width>300</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>300</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Полигон частот</string>
             </property>
            </widget>
           </item>
@@ -1565,7 +1579,7 @@ hr { height: 1px; border-width: 0; }
            </widget>
           </item>
           <item>
-           <widget class="QTableWidget" name="rowsTable_9">
+           <widget class="QTableWidget" name="groupRow3">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1963,7 +1977,7 @@ hr { height: 1px; border-width: 0; }
            </widget>
           </item>
           <item>
-           <widget class="QTableWidget" name="rowsTable_10">
+           <widget class="QTableWidget" name="intervalRow3">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>

@@ -55,12 +55,23 @@ class MainWindow(QMainWindow):
         self.ui.secondTask.clicked.connect(lambda x: (self.setCurrentMode(1)))
         self.ui.thirdTask.clicked.connect(lambda x: (self.setCurrentMode(2)))
         
+        #Задание 2
         self.ui.frequencyHistogramBtn_2.clicked.connect(self.frequencyHistogram2)
         self.ui.relativeFrequencyHistogramBtn_2.clicked.connect(self.relativeFrequencyHistogram2)
         self.ui.empiricalIntervalFunctionBtn_2.clicked.connect(self.empiricalIntervalFunction2)
         self.ui.empiricalGroupFunctionBtn_2.clicked.connect(self.empiricalGroupFunction2)
         self.ui.frequencyPolygonBtn_2.clicked.connect(self.frequencyPolygon2)
         self.ui.relativeFrequencyPolygonBtn_2.clicked.connect(self.relativeFrequencyPolygon2)
+        
+        #Задание 3
+        self.ui.frequencyHistogramBtn_3.clicked.connect(self.frequencyHistogram2)
+        self.ui.relativeFrequencyHistogramBtn_3.clicked.connect(self.relativeFrequencyHistogram2)
+        self.ui.empiricalIntervalFunctionBtn_3.clicked.connect(self.empiricalIntervalFunction2)
+        self.ui.empiricalGroupFunctionBtn_3.clicked.connect(self.empiricalGroupFunction2)
+        self.ui.frequencyPolygonBtn_3.clicked.connect(self.frequencyPolygon2)
+        self.ui.relativeFrequencyPolygonBtn_3.clicked.connect(self.relativeFrequencyPolygon2)
+        
+        
         
         self.setCurrentMode(0)
         
@@ -148,10 +159,10 @@ class MainWindow(QMainWindow):
                 return
             print("intervalRow: ", self.intervalRow)      
             #Вывести интервальный ряд
-            self.showIntervalRow()
+            self.showIntervalRow(self.ui.intervalRow2)
             
             #Вывести группированный ряд
-            self.showGroupRow()
+            self.showGroupRow(self.ui.groupRow2)
             
             #Построить полигон вероятностей
             
@@ -177,50 +188,31 @@ class MainWindow(QMainWindow):
             file = open(fileName, 'r')
             
             #Чтение интервалов и их n из файла
-            self.currentIntervals = np.loadtxt(file)
+            self.intervalRow = np.genfromtxt(fileName, delimiter=',', names=True)
             
             #Закрытие файла
             file.close()
             
-            #Вывод интервала чисел в виджет через запятую
+            #Вывести интервальный ряд
+            self.showIntervalRow(self.ui.intervalRow3)
             
-            #Получить интервалы от пользователя
+            #Вывести группированный ряд
+            self.showGroupRow(self.ui.groupRow3)
             
             #Вывод сообщения в консоль
             print("Файл успешно открыт")
             
-            #Очистить таблицу интервального ряда
+                                  
             
-            #Посчитать n для каждого интервала
-                
-            #Заполняем таблицу интервального ряда
-            
-            #Очистить таблицу группированного ряда
-            
-            #Находим центры интервалов
-            
-            #Заполняем таблицу группированого ряда
-            
-            #Построить полигон вероятностей
-            
-            #Найти эмпирическую функцию
-            #Построить график эмпирической функции
-            
-             
-            
-            
-            #Вывести вариационный ряд
-            self.showVariationRow()
-            #Вывести статистический ряд частот
-            self.showFrequencyRows()
+
             #Вывести D выборочное
-            self.showD()
+            #self.showD()
             #Вывести x выборочное
-            self.showX()
+            #self.showX()
             #Вывести сигма выборочной
-            self.showSigma()
+            #self.showSigma()
             #Вывести результат S
-            self.showS()
+            #self.showS()
             
     
     @Slot()
@@ -342,53 +334,53 @@ class MainWindow(QMainWindow):
         self.ui.lineS.setText(str(getS(self.currentArray)))
     
     @Slot()
-    def showIntervalRow(self):
+    def showIntervalRow(self, table):
         #Очистка таблицы
-        self.ui.intervalRow2.clear()
+        table.clear()
         
         #Добавить столбцы в таблицу
-        self.ui.intervalRow2.setColumnCount(len(self.intervalRow['start']))
+        table.setColumnCount(len(self.intervalRow['start']))
         
         #Заполнить первую строку таблицы - интервалы [x1,x2]
         for i in range (len(self.intervalRow['start'])):
             string = "[" + str(self.intervalRow['start'][i]) + "," + str(self.intervalRow['end'][i]) + "]"
             newItem = QTableWidgetItem(string)
-            self.ui.intervalRow2.setItem(0, i, newItem)
+            table.setItem(0, i, newItem)
         #Заполнить вторую строку таблицы - частоты интервалов
         for i in range (len(self.intervalRow['start'])):
             newItem = QTableWidgetItem(str(self.intervalRow['frequency'][i]))
-            self.ui.intervalRow2.setItem(1, i, newItem)
+            table.setItem(1, i, newItem)
             
         #Заполнить третью строку таблицы - относительные частоты в виде натуральной дроби
         for i in range(len(self.intervalRow['start'])):
             numerator = self.intervalRow['frequency'][i]
-            denominator = len(self.currentArray)
+            denominator = sum(self.intervalRow['frequency'])
             naturalFraction = mathTex_to_QPixmap(r"$\frac{" + str(numerator) + "}{" + str(denominator) + "}$", 15)
             newItem = QTableWidgetItem("")
             newItem.setData(Qt.DecorationRole, naturalFraction)
-            self.ui.intervalRow2.setItem(2, i, newItem)
+            table.setItem(2, i, newItem)
             
         #Добавить вертикальные заголовки
-        self.ui.intervalRow2.setVerticalHeaderItem(0, QTableWidgetItem("x(i);x(i+1)"))
-        self.ui.intervalRow2.setVerticalHeaderItem(1, QTableWidgetItem("n(i)"))
-        self.ui.intervalRow2.setVerticalHeaderItem(1, QTableWidgetItem("W(i)"))
+        table.setVerticalHeaderItem(0, QTableWidgetItem("x(i);x(i+1)"))
+        table.setVerticalHeaderItem(1, QTableWidgetItem("n(i)"))
+        table.setVerticalHeaderItem(1, QTableWidgetItem("W(i)"))
         print("Интервальный ряд частот и относительных частот успешно построен")
         
     @Slot()
-    def showGroupRow(self):
+    def showGroupRow(self,table):
         #Очистка таблицы
-        self.ui.groupRow2.clear()
+        table.clear()
        
         #Добавить столбцы в таблицу
-        self.ui.groupRow2.setColumnCount(len(self.intervalRow['start']))
+        table.setColumnCount(len(self.intervalRow['start']))
         #Увеличить размер ячеек
         for i in range(len(self.intervalRow['start'])):
-            self.ui.groupRow2.setColumnWidth(i, 100)
+            table.setColumnWidth(i, 100)
         
         self.groupRow = {
             'numbers': [],
             'numerators': [],
-            'denominator': len(self.currentArray)
+            'denominator': sum(self.intervalRow['frequency'])
         }
         
         for i in range(len(self.intervalRow['start'])):
@@ -400,11 +392,11 @@ class MainWindow(QMainWindow):
         for i in range(len(self.groupRow['numbers'])):
             string = str(self.groupRow['numbers'][i])  
             newItem = QTableWidgetItem(string)
-            self.ui.groupRow2.setItem(0, i, newItem)
+            table.setItem(0, i, newItem)
         #Заполнить вторую строку таблицы - частоты интервалов
         for i in range (len(self.groupRow['numbers'])):
             newItem = QTableWidgetItem(str(self.groupRow['numerators'][i]))
-            self.ui.groupRow2.setItem(1, i, newItem)
+            table.setItem(1, i, newItem)
             
         #Заполнить третью строку таблицы - относительные частоты в виде натуральной дроби
         for i in range(len(self.groupRow['numbers'])):
@@ -413,12 +405,12 @@ class MainWindow(QMainWindow):
             naturalFraction = mathTex_to_QPixmap(r"$\frac{" + str(numerator) + "}{" + str(denominator) + "}$", 15)
             newItem = QTableWidgetItem("")
             newItem.setData(Qt.DecorationRole, naturalFraction)
-            self.ui.groupRow2.setItem(2, i, newItem)
+            table.setItem(2, i, newItem)
             
         #Добавить вертикальные заголовки
-        self.ui.groupRow2.setVerticalHeaderItem(0, QTableWidgetItem("x(i)"))
-        self.ui.groupRow2.setVerticalHeaderItem(1, QTableWidgetItem("n(i)"))
-        self.ui.groupRow2.setVerticalHeaderItem(1, QTableWidgetItem("W(i)"))
+        table.setVerticalHeaderItem(0, QTableWidgetItem("x(i)"))
+        table.setVerticalHeaderItem(1, QTableWidgetItem("n(i)"))
+        table.setVerticalHeaderItem(1, QTableWidgetItem("W(i)"))
         print("Группированный ряд частот и относительных частот успешно построен")
             
     @Slot()
@@ -449,7 +441,7 @@ class MainWindow(QMainWindow):
         for i in range(len(self.intervalRow['start'])):
             relativeIntervalRow['start'].append(self.intervalRow['start'][i])
             relativeIntervalRow['end'].append(self.intervalRow['end'][i])
-            relativeIntervalRow['relativeFrequency'].append(self.intervalRow['frequency'][i] / len(self.currentArray))
+            relativeIntervalRow['relativeFrequency'].append(self.intervalRow['frequency'][i] / sum(self.intervalRow['frequency']))
         
         print("relativeFrequencyHistogram2: ", relativeIntervalRow)
     
@@ -466,7 +458,7 @@ class MainWindow(QMainWindow):
         for i in range(1, len(self.intervalRow['start'])):
             intervalEmpirical['start'].append(self.intervalRow['start'][i])
             intervalEmpirical['end'].append(self.intervalRow['end'][i])
-            intervalEmpirical['y'].append(sum(self.intervalRow['frequency'][:i]) / len(self.currentArray))
+            intervalEmpirical['y'].append(sum(self.intervalRow['frequency'][:i]) / sum(self.intervalRow['frequency']))
         
         # Добавить последнюю точку равную 1
         allX = [value for value in intervalEmpirical["start"]] + [value for value in intervalEmpirical["end"]] 
