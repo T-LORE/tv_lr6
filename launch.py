@@ -290,6 +290,13 @@ class MainWindow(QMainWindow):
             empiricalFunction['start'].append(x[i]) 
             empiricalFunction['end'].append(x[i+1])
             empiricalFunction['y'].append(sum(relativefrequencyRow['numerators'][:i+1])/relativefrequencyRow['denominator'])
+        
+        allX = [value for value in empiricalFunction["start"]] + [value for value in empiricalFunction["end"]] 
+        xMinDiff = graph.minDiffInList(allX)
+        lastx = empiricalFunction['end'][-1] 
+        empiricalFunction['start'].append(lastx)
+        empiricalFunction['end'].append(lastx+xMinDiff) 
+        empiricalFunction['y'].append(1)
             
         #Построение разорванного графика
         graph.drawEmpiricalGraph(empiricalFunction, xLabel="X axis", yLabel="Y axis", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
@@ -369,7 +376,7 @@ class MainWindow(QMainWindow):
                 self.ui.groupRow2.setColumnWidth(i, 100)
             #Заполнить первую строку таблицы - интервалы [x1,x2]
             for i in range (len(self.intervalRow['start'])):
-                string = "[" + str(self.intervalRow['start'][i]) + "," + str(self.intervalRow['end'][i]) + "]"
+                string = str((self.intervalRow['start'][i] + self.intervalRow['end'][i]) / 2)  
                 newItem = QTableWidgetItem(string)
                 self.ui.groupRow2.setItem(0, i, newItem)
             #Заполнить вторую строку таблицы - частоты интервалов
