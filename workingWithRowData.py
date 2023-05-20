@@ -119,11 +119,3 @@ def split(arr, maxIntervals, minFrequency = 5):
         intervals = min_sum(intervals)
     return intervals
 
-numbers = [1, 2, 2, 3, 4, 5, 6, 1, 2, 7, 8]
-num_intervals = 3
-min_interval_size = 2
-
-res = split(numbers, num_intervals, min_interval_size)
-#Напечатайте результат
-for i in range(len(res['start'])):
-    print(f"[{res['start'][i]}; {res['end'][i]}] - {res['frequency'][i]}")
