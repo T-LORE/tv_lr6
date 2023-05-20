@@ -854,7 +854,7 @@ hr { height: 1px; border-width: 0; }
            </widget>
           </item>
           <item>
-           <widget class="QTableWidget" name="rowsTable_3">
+           <widget class="QTableWidget" name="intervalRow2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -953,7 +953,7 @@ hr { height: 1px; border-width: 0; }
            </widget>
           </item>
           <item>
-           <widget class="QTableWidget" name="rowsTable_4">
+           <widget class="QTableWidget" name="groupRow2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>

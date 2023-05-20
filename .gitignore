@@ -166,3 +166,8 @@ testData/
 
 # vsCode
 .vscode/
+
+#interface autosave
+interface.ui.autosave
+
+interface_ui.py

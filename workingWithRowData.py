@@ -44,3 +44,78 @@ def getSigma(numbersArray):
 def getS(numbersArray):
     return np.sqrt(getD(numbersArray))
 
+
+#Разбить на минимальное количество интервалов, чтобы частота каждого интервала была не меньше заданной
+def split_array_into_intervals(arr, min_frequency):
+    arr = np.sort(arr)
+    intervals = {
+        'start' : [],
+        'end' : [],
+        'frequency' : []
+    }
+    current_interval = [arr[0],0]
+    current_in_interval = [arr[0]]
+    frequency = 0
+
+    for num in arr:
+        if frequency < min_frequency:
+            if ((len(intervals['start']) == 0) and (num >= current_interval[0])) or ((len(intervals['start']) > 0) and (num > current_interval[0])):
+                frequency+=1
+                current_in_interval.append(num)
+        else:
+            if num in current_in_interval:
+                frequency+=1
+                current_in_interval.append(num)
+            else:
+                if current_interval[0] == current_in_interval[-1]:
+                    frequency+=1
+                    current_in_interval.append(num)
+                else:
+                    current_interval[1] = current_in_interval[-1]
+                    intervals['start'].append(current_interval[0])
+                    intervals['end'].append( current_interval[1])
+                    intervals['frequency'].append(frequency)
+                    current_interval[0] = current_in_interval[-1]
+                    frequency = 1
+                    current_in_interval.append(num)
+    if frequency >= min_frequency:
+        current_interval[1] = current_in_interval[-1]
+        intervals['start'].append(current_interval[0])
+        intervals['end'].append( current_interval[1])
+        intervals['frequency'].append(frequency)
+    else:
+        intervals['end'][-1] = current_in_interval[-1]
+        intervals['frequency'][-1] += frequency
+
+    return intervals
+
+#Объеденить 2 интервала с минимальной частотой
+def min_sum(arr):
+    min_sum = float('inf')
+    min_index = -1
+
+    for i in range(len(arr['start']) - 1):
+        current_sum = arr['frequency'][i] + arr['frequency'][i + 1]
+        if current_sum < min_sum:
+            min_sum = current_sum
+            min_index = i
+
+    if min_index != -1:
+        new_value = arr['frequency'][min_index] + arr['frequency'][min_index + 1]
+        arr['frequency'][min_index] = new_value
+        arr['end'][min_index] = arr['end'][min_index + 1]
+        del arr['start'][min_index + 1]
+        del arr['end'][min_index + 1]
+        del arr['frequency'][min_index + 1]
+
+    return arr
+
+#Разбить на заданное количество интервалов
+def split(arr, maxIntervals, minFrequency = 5):
+    intervals = split_array_into_intervals(arr, minFrequency)
+    if len(intervals['start']) < maxIntervals:
+        raise ValueError("Невозможно разбить на заданное количество интервалов")
+    while len(intervals['start']) > maxIntervals:
+        intervals = min_sum(intervals)
+    return intervals
+
