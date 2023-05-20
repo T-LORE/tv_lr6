@@ -74,7 +74,11 @@ def drawPolygonGraph(x, y, xLabel="", yLabel="", color="black", width=2, dashCol
             xFirst = x[0]
             xDeltaForScaling = xFirst - xMinDiff  
 
-            xScaled = [i - xDeltaForScaling for i in xUnscaled]
+            useScaling = xDeltaForScaling > 0.1
+
+            xScaled = [i for i in xUnscaled]
+            if useScaling:
+                xScaled = [i - xDeltaForScaling for i in xScaled]
             yScaled = yUnscaled
 
             #Пунктирные линии к точкам
@@ -87,10 +91,11 @@ def drawPolygonGraph(x, y, xLabel="", yLabel="", color="black", width=2, dashCol
             removeBordersAndAddArrows(ax)
         
             #Добавить разрыв оси 
-            #Белый фон для разрыва
-            ax.plot(xScaled[0] / 2, 0, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
-            #Символ разрыва
-            plt.text(xScaled[0] / 2, 0, "∿", size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
+            if useScaling:
+                #Белый фон для разрыва
+                ax.plot(xScaled[0] / 2, 0, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
+                #Символ разрыва
+                plt.text(xScaled[0] / 2, 0, "∿", size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
         
         #Названия осей
         plt.xlabel(xLabel)
@@ -135,6 +140,8 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
         xFirst = empiricalFunction["start"][0]
         xDeltaForScaling = xFirst - xMinDiff        
         
+        useScaling = xDeltaForScaling > 0.1
+        
         #Рисуем основные стрелочки
         for i in range(len(empiricalFunction["y"])):
             #Точки для отрисовки линии
@@ -146,7 +153,8 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
             yUnscaled += yy
                       
             #Смещаем значения
-            xx = [i - xDeltaForScaling for i in xx]
+            if useScaling:
+                xx = [i - xDeltaForScaling for i in xx]
             
             #Записываем изменённые значения на которых будут находится названия
             xScaled += xx
@@ -167,10 +175,11 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
         removeBordersAndAddArrows(ax)
         
         #Добавить разрыв оси 
-        #Белый фон для разрыва
-        ax.plot(xScaled[0] / 2, 0, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
-        #Символ разрыва
-        plt.text(xScaled[0] / 2, 0, "∿", size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
+        if useScaling:
+            #Белый фон для разрыва
+            ax.plot(xScaled[0] / 2, 0, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
+            #Символ разрыва
+            plt.text(xScaled[0] / 2, 0, "∿", size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
     
     #Названия осей
     plt.xlabel(xLabel)
