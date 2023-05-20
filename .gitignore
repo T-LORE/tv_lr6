@@ -169,3 +169,5 @@ testData/
 
 #interface autosave
 interface.ui.autosave
+
+interface_ui.py
