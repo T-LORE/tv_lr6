@@ -160,7 +160,8 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
             
 
         #Пунктирные линии к точкам
-        drawDashLines(ax, xScaled, yScaled, dashColor, dashAlpha, dashWidth, zorder=5)
+        #Список обрезан, т.к. последняя стрелка идет из бесконечности
+        drawDashLines(ax, xScaled[:-1], yScaled[:-1], dashColor, dashAlpha, dashWidth, zorder=5)
 
         #Убрать границы и добавить стрелочки на осях
         removeBordersAndAddArrows(ax)
@@ -176,8 +177,12 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
     plt.ylabel(yLabel)
     
     #Отображаем только известные значения
-    ax.set_xticks([0] + xScaled, [0] + xUnscaled, fontsize=tickFontSize, minor=False)
+    #Список обрезан, т.к. последняя стрелка идет из бесконечности
+    ax.set_xticks([0] + xScaled[:-1], [0] + xUnscaled[:-1], fontsize=tickFontSize, minor=False)
     ax.set_yticks([0] + yScaled, [0] + yUnscaled, fontsize=tickFontSize, minor=False)
+    
+    #Не продлевать ось X дальше графика
+    ax.margins(x=0.0)
     
     #Окно на весь экран
     if fullscreenStart:
