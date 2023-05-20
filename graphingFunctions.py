@@ -17,20 +17,21 @@ def removeBordersAndAddArrows(ax):
     
 
 def drawDashLines(ax, x, y, dashColor, dashAlpha, dashWidth, zorder=3):
-    #zip(x, y) - cписок всех точек графика
+    #zip(x, y) - cписок всех точек графика      
+    points = [i for i in zip(x, y)]
             
     #Dictionary горизонтальных линий
     horizontalLines = {}
-    for point in zip(x, y):
+    for point in points:
         horizontalLines[point[1]] = []
-    for point in zip(x, y):
+    for point in points:
         horizontalLines[point[1]].append(point[0])
         
     #Dictionary вертикальных линий
     vertiaclLines = {}
-    for point in zip(x, y):
+    for point in points:
         vertiaclLines[point[0]] = []
-    for point in zip(x, y):
+    for point in points:
         vertiaclLines[point[0]].append(point[1])
                             
     #Рисуем горизонтальные линии
