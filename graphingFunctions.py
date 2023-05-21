@@ -64,23 +64,36 @@ def drawPolygonGraph(x, y, xLabel="", yLabel="", color="black", width=2, dashCol
             yUnscaled = [i for i in y]
             #Изменённые значения для разрыва
             xScaled = []
-            yScaled = []
-        
+            yScaled = []           
+
             #Находим мин разницу м/у элементами
             allX = x        
             xMinDiff = minDiffInList(allX)
-            print(f"Min diff = { xMinDiff }")
+            print(f"Min x diff = { xMinDiff }")
+        
+            allY = y        
+            yMinDiff = minDiffInList(allY)
+            print(f"Min y diff = { yMinDiff }")
         
             #Находим смещение для всех X
-            xFirst = x[0]
-            xDeltaForScaling = xFirst - xMinDiff  
+            xFirst = min(allX)
+            xDeltaForScaling = xFirst - xMinDiff        
+            
+            xUseScaling = xDeltaForScaling > 0.5 * xMinDiff
+            
+            #Находим смещение для всех Y
+            yFirst = min(allY)
+            yDeltaForScaling = yFirst - 2*yMinDiff 
+            
+            yUseScaling = yDeltaForScaling > 0.5 * yMinDiff
 
-            useScaling = xDeltaForScaling > 0.1
-
-            xScaled = [i for i in xUnscaled]
-            if useScaling:
+            xScaled = xUnscaled[:]
+            if xUseScaling:
                 xScaled = [i - xDeltaForScaling for i in xScaled]
-            yScaled = yUnscaled
+                
+            yScaled = yUnscaled[:]
+            if yUseScaling:
+                yScaled = [i - yDeltaForScaling for i in yScaled]
 
             #Пунктирные линии к точкам
             drawLinesToPoints(ax, xScaled, yScaled, dashColor, dashAlpha, dashWidth, style="--", orientation="both", zorder=5)
@@ -91,12 +104,21 @@ def drawPolygonGraph(x, y, xLabel="", yLabel="", color="black", width=2, dashCol
             #Убрать границы и добавить стрелочки на осях
             removeBordersAndAddArrows(ax)
         
-            #Добавить разрыв оси 
-            if useScaling:
+            #Добавить разрыв оси X
+            if xUseScaling:
+                firstScaledX = min(xScaled)
                 #Белый фон для разрыва
-                ax.plot(xScaled[0] / 2, 0, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
+                ax.plot(firstScaledX / 2, 0, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
                 #Символ разрыва
-                plt.text(xScaled[0] / 2, 0, "∿", size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
+                plt.text(firstScaledX / 2, 0, "∿", size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
+                
+            #Добавить разрыв оси Y
+            if yUseScaling:
+                firstScaledY = min(yScaled)
+                #Белый фон для разрыва
+                ax.plot(0, firstScaledY / 2, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
+                #Символ разрыва
+                plt.text(0, firstScaledY / 2, "∿", rotation=90, size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
         
         #Названия осей
         plt.xlabel(xLabel)
@@ -141,10 +163,10 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
         print(f"Min diff = { xMinDiff }")
     
         #Находим смещение для всех X
-        xFirst = empiricalFunction[startKey][0]
+        xFirst = min(allX)
         xDeltaForScaling = xFirst - xMinDiff        
         
-        useScaling = xDeltaForScaling > 0.1
+        useScaling = xDeltaForScaling > 0.5 * xMinDiff
         
         #Рисуем основные стрелочки
         for i in range(len(empiricalFunction[yKey])):
@@ -180,10 +202,11 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
         
         #Добавить разрыв оси 
         if useScaling:
+            firstScaledX = min(xScaled)
             #Белый фон для разрыва
-            ax.plot(xScaled[0] / 2, 0, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
+            ax.plot(firstScaledX / 2, 0, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
             #Символ разрыва
-            plt.text(xScaled[0] / 2, 0, "∿", size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
+            plt.text(firstScaledX / 2, 0, "∿", size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
     
     #Названия осей
     plt.xlabel(xLabel)
@@ -224,13 +247,23 @@ def drawHistogramGraph(histogramFunction, xLabel="", yLabel="", color="black", w
         #Находим мин разницу м/у элементами
         allX = [value for value in histogramFunction[startKey]] + [value for value in histogramFunction[endKey]]        
         xMinDiff = minDiffInList(allX)
-        print(f"Min diff = { xMinDiff }")
+        print(f"Min x diff = { xMinDiff }")
+    
+        allY = [value for value in histogramFunction[yKey]]        
+        yMinDiff = minDiffInList(allY)
+        print(f"Min y diff = { yMinDiff }")
     
         #Находим смещение для всех X
-        xFirst = histogramFunction[startKey][0]
+        xFirst = min(allX)
         xDeltaForScaling = xFirst - xMinDiff        
         
-        useScaling = xDeltaForScaling > 0.1
+        xUseScaling = xDeltaForScaling > 0.5 * xMinDiff
+        
+        #Находим смещение для всех Y
+        yFirst = min(allY)
+        yDeltaForScaling = yFirst - 2*yMinDiff 
+        
+        yUseScaling = yDeltaForScaling > 0.5 * yMinDiff 
         
         #Рисуем линии
         for i in range(len(histogramFunction[yKey])):
@@ -243,8 +276,10 @@ def drawHistogramGraph(histogramFunction, xLabel="", yLabel="", color="black", w
             yUnscaled += yy
                       
             #Смещаем значения
-            if useScaling:
+            if xUseScaling:
                 xx = [i - xDeltaForScaling for i in xx]
+            if yUseScaling:
+                yy = [i - yDeltaForScaling for i in yy]
             
             #Записываем изменённые значения на которых будут находится названия
             xScaled += xx
@@ -262,12 +297,21 @@ def drawHistogramGraph(histogramFunction, xLabel="", yLabel="", color="black", w
         #Убрать границы и добавить стрелочки на осях
         removeBordersAndAddArrows(ax)
         
-        #Добавить разрыв оси 
-        if useScaling:
+        #Добавить разрыв оси X
+        if xUseScaling:
+            firstScaledX = min(xScaled)
             #Белый фон для разрыва
-            ax.plot(xScaled[0] / 2, 0, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
+            ax.plot(firstScaledX / 2, 0, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
             #Символ разрыва
-            plt.text(xScaled[0] / 2, 0, "∿", size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
+            plt.text(firstScaledX / 2, 0, "∿", size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
+            
+        #Добавить разрыв оси Y
+        if yUseScaling:
+            firstScaledY = min(yScaled)
+            #Белый фон для разрыва
+            ax.plot(0, firstScaledY / 2, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
+            #Символ разрыва
+            plt.text(0, firstScaledY / 2, "∿", rotation=90, size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
     
     #Названия осей
     plt.xlabel(xLabel)
