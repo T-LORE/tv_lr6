@@ -125,8 +125,13 @@ def drawPolygonGraph(x, y, xLabel="", yLabel="", color="black", width=2, dashCol
         plt.ylabel(yLabel)
         
         #Отображаем только известные значения
-        ax.set_xticks([0] + xScaled, [0] + xUnscaled, fontsize=tickFontSize, minor=False)
-        ax.set_yticks([0] + yScaled, [0] + yUnscaled, fontsize=tickFontSize, minor=False)
+        xScaledUniqTicks = list(dict.fromkeys([0] + xScaled))
+        xUnscaledUniqTicks = list(dict.fromkeys([0] + xUnscaled))
+        ax.set_xticks(xScaledUniqTicks, xUnscaledUniqTicks, fontsize=tickFontSize, minor=False)
+        
+        yScaledUniqTicks = list(dict.fromkeys([0] + yScaled))
+        yUnscaledUniqTicks = list(dict.fromkeys([0] + yUnscaled))
+        ax.set_yticks(yScaledUniqTicks, yUnscaledUniqTicks, fontsize=tickFontSize, minor=False)
           
         #Окно на весь экран
         if fullscreenStart:
@@ -214,8 +219,13 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
     
     #Отображаем только известные значения
     #Список обрезан, т.к. последняя стрелка идет из бесконечности
-    ax.set_xticks([0] + xScaled[:-1], [0] + xUnscaled[:-1], fontsize=tickFontSize, minor=False)
-    ax.set_yticks([0] + yScaled, [0] + yUnscaled, fontsize=tickFontSize, minor=False)
+    xScaledUniqTicks = list(dict.fromkeys([0] + xScaled[:-1]))
+    xUnscaledUniqTicks = list(dict.fromkeys([0] + xUnscaled[:-1]))
+    ax.set_xticks(xScaledUniqTicks, xUnscaledUniqTicks, fontsize=tickFontSize, minor=False)
+    
+    yScaledUniqTicks = list(dict.fromkeys([0] + yScaled))
+    yUnscaledUniqTicks = list(dict.fromkeys([0] + yUnscaled))
+    ax.set_yticks(yScaledUniqTicks, yUnscaledUniqTicks, fontsize=tickFontSize, minor=False)
     
     #Не продлевать ось X дальше графика
     ax.margins(x=0.0)
@@ -318,8 +328,13 @@ def drawHistogramGraph(histogramFunction, xLabel="", yLabel="", color="black", w
     plt.ylabel(yLabel)
     
     #Отображаем только известные значения
-    ax.set_xticks([0] + xScaled, [0] + xUnscaled, fontsize=tickFontSize, minor=False)
-    ax.set_yticks([0] + yScaled, [0] + yUnscaled, fontsize=tickFontSize, minor=False)
+    xScaledUniqTicks = list(dict.fromkeys([0] + xScaled))
+    xUnscaledUniqTicks = list(dict.fromkeys([0] + xUnscaled))
+    ax.set_xticks(xScaledUniqTicks, xUnscaledUniqTicks, fontsize=tickFontSize, minor=False)
+    
+    yScaledUniqTicks = list(dict.fromkeys([0] + yScaled))
+    yUnscaledUniqTicks = list(dict.fromkeys([0] + yUnscaled))
+    ax.set_yticks(yScaledUniqTicks, yUnscaledUniqTicks, fontsize=tickFontSize, minor=False)
     
     
     #Окно на весь экран
