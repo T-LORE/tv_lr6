@@ -115,13 +115,13 @@ class MainWindow(QMainWindow):
             #Вывести статистический ряд частот
             self.showFrequencyRows()
             #Вывести D выборочное
-            self.showD()
+            self.ui.lineD.setText(str(round(getD(self.currentArray),2)))
             #Вывести x выборочное
-            self.showX()
+            self.ui.lineX.setText(str(round(getX(self.currentArray),2)))
             #Вывести сигма выборочное
-            self.showSigma()
+            self.ui.lineSigma.setText(str(round(getSigma(self.currentArray),2)))
             #Вывести результат S
-            self.showS()            
+            self.ui.lineS.setText(str(round(getS(self.currentArray),2)))           
     
     @Slot()    
     def openFileBtnClicked_2(self):
@@ -164,20 +164,17 @@ class MainWindow(QMainWindow):
             #Вывести группированный ряд
             self.showGroupRow(self.ui.groupRow2)
             
-            #Построить полигон вероятностей
-            
-            #Найти эмпирическую функцию
-            
-            #Построить график эмпирической функции
+            #Создать массив группированного ряда  
+            array = np.repeat(self.groupRow['numbers'], self.groupRow['numerators'])
             
             #Вывести D выборочное
-            self.showD()
+            self.ui.lineD_2.setText(str(round(getD(array),2)))
             #Вывести x выборочное
-            self.showX()
+            self.ui.lineX_2.setText(str(round(getX(array), 2)))
             #Вывести сигма выборочной
-            self.showSigma()
+            self.ui.lineSigma_2.setText(str(round(getSigma(array), 2)))
             #Вывести результат S
-            self.showS()
+            self.ui.lineS_2.setText(str(round(getS(array),2)))
             
     @Slot()    
     def openFileBtnClicked_3(self):
@@ -205,14 +202,17 @@ class MainWindow(QMainWindow):
                                   
             
 
+            #Создать массив группированного ряда  
+            array = np.repeat(self.groupRow['numbers'], self.groupRow['numerators'])
+            
             #Вывести D выборочное
-            #self.showD()
+            self.ui.lineD_3.setText(str(round(getD(array),2)))
             #Вывести x выборочное
-            #self.showX()
+            self.ui.lineX_3.setText(str(round(getX(array), 2)))
             #Вывести сигма выборочной
-            #self.showSigma()
+            self.ui.lineSigma_3.setText(str(round(getSigma(array), 2)))
             #Вывести результат S
-            #self.showS()
+            self.ui.lineS_3.setText(str(round(getS(array),2)))
             
     
     @Slot()
@@ -314,24 +314,6 @@ class MainWindow(QMainWindow):
             
         #Построение разорванного графика
         graph.drawEmpiricalGraph(empiricalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
-             
-        
-        
-    @Slot()
-    def showD(self):
-        self.ui.lineD.setText(str(getD(self.currentArray)))
-    
-    @Slot()
-    def showX(self):
-        self.ui.lineX.setText(str(getX(self.currentArray)))
-    
-    @Slot()
-    def showSigma(self):
-        self.ui.lineSigma.setText(str(getSigma(self.currentArray)))
-    
-    @Slot()
-    def showS(self):
-        self.ui.lineS.setText(str(getS(self.currentArray)))
     
     @Slot()
     def showIntervalRow(self, table):
