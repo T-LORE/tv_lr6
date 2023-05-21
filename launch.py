@@ -427,6 +427,10 @@ class MainWindow(QMainWindow):
             frequencyHistogram['end'].append(self.intervalRow['end'][i])
             frequencyHistogram['frequency'].append(self.intervalRow['frequency'][i])
         
+        
+        graph.drawHistogramGraph(frequencyHistogram, xLabel="x", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+
+        
         print("frequencyHistogram: ", frequencyHistogram)  
     
     @Slot()
@@ -442,6 +446,9 @@ class MainWindow(QMainWindow):
             relativeIntervalRow['start'].append(self.intervalRow['start'][i])
             relativeIntervalRow['end'].append(self.intervalRow['end'][i])
             relativeIntervalRow['relativeFrequency'].append(self.intervalRow['frequency'][i] / sum(self.intervalRow['frequency']))
+        
+        graph.drawHistogramGraph(relativeIntervalRow, xLabel="x", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+        
         
         print("relativeFrequencyHistogram2: ", relativeIntervalRow)
     

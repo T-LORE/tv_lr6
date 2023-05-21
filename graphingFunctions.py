@@ -15,40 +15,41 @@ def removeBordersAndAddArrows(ax):
             transform=ax.get_xaxis_transform(), clip_on=False)
     
     
-
-def drawDashLines(ax, x, y, dashColor, dashAlpha, dashWidth, zorder=3):
-    #zip(x, y) - cписок всех точек графика      
+def drawLinesToPoints(ax, x, y, color, alpha, width, style="-", orientation="both", zorder=3):
     points = [i for i in zip(x, y)]
+          
+    if orientation == "both" or orientation == "horizontal":
+        #Dictionary горизонтальных линий
+        horizontalLines = {}
+        for point in points:
+            horizontalLines[point[1]] = []
+        for point in points:
+            horizontalLines[point[1]].append(point[0])
             
-    #Dictionary горизонтальных линий
-    horizontalLines = {}
-    for point in points:
-        horizontalLines[point[1]] = []
-    for point in points:
-        horizontalLines[point[1]].append(point[0])
+        #Рисуем горизонтальные линии
+        for lineY in horizontalLines:
+            horizontalLines[lineY].sort()
+            biggestX = horizontalLines[lineY][-1]
+            xx = [0, biggestX]
+            yy = [lineY] * 2
+            ax.plot(xx, yy, linestyle=style, color=color, alpha=alpha, linewidth=width, zorder=zorder)
+      
+    if orientation == "both" or orientation == "vertical":  
+        #Dictionary вертикальных линий
+        vertiaclLines = {}
+        for point in points:
+            vertiaclLines[point[0]] = []
+        for point in points:
+            vertiaclLines[point[0]].append(point[1])                  
         
-    #Dictionary вертикальных линий
-    vertiaclLines = {}
-    for point in points:
-        vertiaclLines[point[0]] = []
-    for point in points:
-        vertiaclLines[point[0]].append(point[1])
-                            
-    #Рисуем горизонтальные линии
-    for lineY in horizontalLines:
-        horizontalLines[lineY].sort()
-        biggestX = horizontalLines[lineY][-1]
-        xx = [0, biggestX]
-        yy = [lineY] * 2
-        ax.plot(xx, yy, '--', color=dashColor, alpha=dashAlpha, linewidth=dashWidth, zorder=zorder)
-    
-    #Рисуем вертикальные линии
-    for lineX in vertiaclLines:
-        vertiaclLines[lineX].sort()
-        biggestY = vertiaclLines[lineX][-1]
-        xx = [lineX] * 2
-        yy = [0, biggestY]
-        ax.plot(xx, yy, '--', color=dashColor, alpha=dashAlpha, linewidth=dashWidth, zorder=zorder)
+        #Рисуем вертикальные линии
+        for lineX in vertiaclLines:
+            vertiaclLines[lineX].sort()
+            biggestY = vertiaclLines[lineX][-1]
+            xx = [lineX] * 2
+            yy = [0, biggestY]
+            ax.plot(xx, yy, linestyle=style, color=color, alpha=alpha, linewidth=width, zorder=zorder)
+
 
 def drawPolygonGraph(x, y, xLabel="", yLabel="", color="black", width=2, dashColor="black", dashAlpha=0.5, dashWidth=0.7, fullscreenStart=True, tickFontSize=11):
     #Построение графика в отдельном окне
@@ -82,7 +83,7 @@ def drawPolygonGraph(x, y, xLabel="", yLabel="", color="black", width=2, dashCol
             yScaled = yUnscaled
 
             #Пунктирные линии к точкам
-            drawDashLines(ax, xScaled, yScaled, dashColor, dashAlpha, dashWidth, zorder=5)
+            drawLinesToPoints(ax, xScaled, yScaled, dashColor, dashAlpha, dashWidth, style="--", orientation="both", zorder=5)
             
             #Рисуем сам график
             ax.plot(xScaled, yScaled, color=color, linewidth=width, zorder=6)
@@ -124,6 +125,9 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
     with plt.rc_context(rc):
         fig, ax = plt.subplots()
         
+        #Получаем названия ключей
+        startKey, endKey, yKey = empiricalFunction.keys()
+        
         #Реальные значения x и y
         xUnscaled = []
         yUnscaled = []
@@ -132,21 +136,21 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
         yScaled = []
         
         #Находим мин разницу м/у элементами
-        allX = [value for value in empiricalFunction["start"]] + [value for value in empiricalFunction["end"]]        
+        allX = [value for value in empiricalFunction[startKey]] + [value for value in empiricalFunction[endKey]]        
         xMinDiff = minDiffInList(allX)
         print(f"Min diff = { xMinDiff }")
     
         #Находим смещение для всех X
-        xFirst = empiricalFunction["start"][0]
+        xFirst = empiricalFunction[startKey][0]
         xDeltaForScaling = xFirst - xMinDiff        
         
         useScaling = xDeltaForScaling > 0.1
         
         #Рисуем основные стрелочки
-        for i in range(len(empiricalFunction["y"])):
+        for i in range(len(empiricalFunction[yKey])):
             #Точки для отрисовки линии
-            xx = [empiricalFunction['start'][i], empiricalFunction['end'][i]]
-            yy = [empiricalFunction['y'][i]] * len(xx)
+            xx = [empiricalFunction[startKey][i], empiricalFunction[endKey][i]]
+            yy = [empiricalFunction[yKey][i]] * len(xx)
                   
             #Записываем изначальные значения для названий на осях
             xUnscaled += xx
@@ -169,7 +173,7 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
 
         #Пунктирные линии к точкам
         #Список обрезан, т.к. последняя стрелка идет из бесконечности
-        drawDashLines(ax, xScaled[:-1], yScaled[:-1], dashColor, dashAlpha, dashWidth, zorder=5)
+        drawLinesToPoints(ax, xScaled[:-1], yScaled[:-1], dashColor, dashAlpha, dashWidth, style="--", orientation="both", zorder=5)
 
         #Убрать границы и добавить стрелочки на осях
         removeBordersAndAddArrows(ax)
@@ -192,6 +196,87 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
     
     #Не продлевать ось X дальше графика
     ax.margins(x=0.0)
+    
+    #Окно на весь экран
+    if fullscreenStart:
+        figManager = plt.get_current_fig_manager() 
+        figManager.window.showMaximized()
+    
+    plt.show()
+    
+def drawHistogramGraph(histogramFunction, xLabel="", yLabel="", color="black", width=2, dashColor="black", dashAlpha=0.5, dashWidth=0.7, fullscreenStart=True, tickFontSize=11):       
+    rc = {"xtick.direction" : "inout", "ytick.direction" : "inout",
+            "xtick.major.size" : 5, "ytick.major.size" : 5,}
+    #with - это не цикл, а что-то типа try except 
+    with plt.rc_context(rc):
+        fig, ax = plt.subplots()
+        
+        #Получаем названия ключей
+        startKey, endKey, yKey = histogramFunction.keys()
+        
+        #Реальные значения x и y
+        xUnscaled = []
+        yUnscaled = []
+        #Изменённые значения для разрыва
+        xScaled = []
+        yScaled = []
+        
+        #Находим мин разницу м/у элементами
+        allX = [value for value in histogramFunction[startKey]] + [value for value in histogramFunction[endKey]]        
+        xMinDiff = minDiffInList(allX)
+        print(f"Min diff = { xMinDiff }")
+    
+        #Находим смещение для всех X
+        xFirst = histogramFunction[startKey][0]
+        xDeltaForScaling = xFirst - xMinDiff        
+        
+        useScaling = xDeltaForScaling > 0.1
+        
+        #Рисуем линии
+        for i in range(len(histogramFunction[yKey])):
+            #Точки для отрисовки линии
+            xx = [histogramFunction[startKey][i], histogramFunction[endKey][i]]
+            yy = [histogramFunction[yKey][i]] * len(xx)
+                  
+            #Записываем изначальные значения для названий на осях
+            xUnscaled += xx
+            yUnscaled += yy
+                      
+            #Смещаем значения
+            if useScaling:
+                xx = [i - xDeltaForScaling for i in xx]
+            
+            #Записываем изменённые значения на которых будут находится названия
+            xScaled += xx
+            yScaled += yy
+            
+            #Рисуем линию
+            ax.plot(xx, yy, color=color, linewidth=width, zorder=6)
+            
+        #Сплошные линии для стобиков
+        drawLinesToPoints(ax, xScaled, yScaled, color, 1, width, style="solid", orientation="vertical", zorder=5)
+
+        #Пунктирные линии к точкам
+        drawLinesToPoints(ax, xScaled, yScaled, dashColor, dashAlpha, dashWidth, style="--", orientation="horizontal", zorder=5)
+
+        #Убрать границы и добавить стрелочки на осях
+        removeBordersAndAddArrows(ax)
+        
+        #Добавить разрыв оси 
+        if useScaling:
+            #Белый фон для разрыва
+            ax.plot(xScaled[0] / 2, 0, ls="", marker="s", markersize=25, color="white", clip_on=False, zorder=3)
+            #Символ разрыва
+            plt.text(xScaled[0] / 2, 0, "∿", size=20, horizontalalignment='center', verticalalignment='center', zorder=4)
+    
+    #Названия осей
+    plt.xlabel(xLabel)
+    plt.ylabel(yLabel)
+    
+    #Отображаем только известные значения
+    ax.set_xticks([0] + xScaled, [0] + xUnscaled, fontsize=tickFontSize, minor=False)
+    ax.set_yticks([0] + yScaled, [0] + yUnscaled, fontsize=tickFontSize, minor=False)
+    
     
     #Окно на весь экран
     if fullscreenStart:
