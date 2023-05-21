@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1164</width>
+    <width>1240</width>
     <height>828</height>
    </rect>
   </property>
@@ -1121,7 +1121,7 @@ hr { height: 1px; border-width: 0; }
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineX_3">
+             <widget class="QLineEdit" name="lineX_2">
               <property name="alignment">
                <set>Qt::AlignCenter</set>
               </property>
@@ -1168,7 +1168,7 @@ hr { height: 1px; border-width: 0; }
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineD_3">
+             <widget class="QLineEdit" name="lineD_2">
               <property name="alignment">
                <set>Qt::AlignCenter</set>
               </property>
@@ -1215,7 +1215,7 @@ hr { height: 1px; border-width: 0; }
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineSigma_3">
+             <widget class="QLineEdit" name="lineSigma_2">
               <property name="alignment">
                <set>Qt::AlignCenter</set>
               </property>
@@ -1262,7 +1262,7 @@ hr { height: 1px; border-width: 0; }
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineS_3">
+             <widget class="QLineEdit" name="lineS_2">
               <property name="text">
                <string/>
               </property>
@@ -1581,7 +1581,7 @@ hr { height: 1px; border-width: 0; }
           <item>
            <widget class="QTableWidget" name="groupRow3">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -1595,7 +1595,7 @@ hr { height: 1px; border-width: 0; }
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>140</height>
+              <height>16777215</height>
              </size>
             </property>
             <property name="verticalScrollBarPolicy">
@@ -1791,7 +1791,7 @@ hr { height: 1px; border-width: 0; }
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineX_7">
+             <widget class="QLineEdit" name="lineX_3">
               <property name="alignment">
                <set>Qt::AlignCenter</set>
               </property>
@@ -1838,7 +1838,7 @@ hr { height: 1px; border-width: 0; }
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineD_7">
+             <widget class="QLineEdit" name="lineD_3">
               <property name="alignment">
                <set>Qt::AlignCenter</set>
               </property>
@@ -1885,7 +1885,7 @@ hr { height: 1px; border-width: 0; }
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineSigma_7">
+             <widget class="QLineEdit" name="lineSigma_3">
               <property name="alignment">
                <set>Qt::AlignCenter</set>
               </property>
@@ -1932,7 +1932,7 @@ hr { height: 1px; border-width: 0; }
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineS_7">
+             <widget class="QLineEdit" name="lineS_3">
               <property name="text">
                <string/>
               </property>
@@ -1979,7 +1979,7 @@ hr { height: 1px; border-width: 0; }
           <item>
            <widget class="QTableWidget" name="intervalRow3">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -1993,7 +1993,7 @@ hr { height: 1px; border-width: 0; }
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>140</height>
+              <height>16777215</height>
              </size>
             </property>
             <property name="verticalScrollBarPolicy">
