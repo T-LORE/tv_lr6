@@ -313,7 +313,7 @@ class MainWindow(QMainWindow):
         empiricalFunction['y'].append(1)
             
         #Построение разорванного графика
-        graph.drawEmpiricalGraph(empiricalFunction, xLabel="X axis", yLabel="Y axis", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+        graph.drawEmpiricalGraph(empiricalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
              
         
         
@@ -468,6 +468,9 @@ class MainWindow(QMainWindow):
         intervalEmpirical['end'].append(lastx+xMinDiff) 
         intervalEmpirical['y'].append(1)
         
+        #Построение разорванного графика
+        graph.drawEmpiricalGraph(intervalEmpirical, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+        
         print("intervalEmpirical: ", intervalEmpirical)
         
     
@@ -494,6 +497,9 @@ class MainWindow(QMainWindow):
         groupEmpirical['end'].append(lastx+xMinDiff) 
         groupEmpirical['y'].append(1)
             
+        #Построение разорванного графика
+        graph.drawEmpiricalGraph(groupEmpirical, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+            
         print("groupEmpirical: ", groupEmpirical)
 
     
@@ -510,6 +516,9 @@ class MainWindow(QMainWindow):
             frequencyPolygon['x'].append(self.groupRow['numbers'][i])
             frequencyPolygon['y'].append(self.groupRow['numerators'][i])
         
+        graph.drawPolygonGraph(frequencyPolygon['x'], frequencyPolygon['y'], xLabel="Число", yLabel="Частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+
+        
         print("frequencyPolygon2: ", frequencyPolygon)
         
     
@@ -524,6 +533,10 @@ class MainWindow(QMainWindow):
         for i in range(len(self.groupRow['numbers'])):
             relativeFrequencyPolygon['x'].append(self.groupRow['numbers'][i])
             relativeFrequencyPolygon['y'].append(self.groupRow['numerators'][i] / self.groupRow['denominator'])
+            
+            
+        graph.drawPolygonGraph(relativeFrequencyPolygon['x'], relativeFrequencyPolygon['y'], xLabel="Число", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+
             
         print("relativeFrequencyPolygon2: ", relativeFrequencyPolygon)
         
