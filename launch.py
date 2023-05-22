@@ -5,7 +5,7 @@ from mainwindow import Ui_MainWindow
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QMessageBox, QListWidgetItem, QFileDialog, QTableWidgetItem
 from PySide6.QtCore import Slot, Signal, Qt
 from PySide6.QtGui import QIcon
-from qpixmapCreator import mathTex_to_QPixmap
+from qpixmapCreator import mathTex_to_QPixmap, mathTex_to_QPixmap_system
 from workingWithRowData import getVariationRow, getFrequencyRow, RowType, getX, getD, getSigma, getS, split
 import numpy as np
 import pyqtgraph as pg
@@ -25,21 +25,36 @@ class MainWindow(QMainWindow):
         self.mode = 0
         self.currentArray = []
         self.currentIntervals = []
+        #Минимальный размер ряда
         self.minFrequency = 5
+        
+        #Включить/выключить динамическую генерацию эмпмрических функций
+        self.generateDynamicEmpirical = False
+        
         #Как записывается формула: r"$Твоя формула$"
         qpixmap = mathTex_to_QPixmap(r"$P_{n} (m) = C^{m}_{n}*p^{m}*q^{n-m} $", 20)
         #Формула среднего выборочного
         x = mathTex_to_QPixmap(r"$\overline{X_{в}} = \frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", 20)
         self.ui.formulaX.setPixmap(x)
+        self.ui.formulaX_2.setPixmap(x)
+        self.ui.formulaX_3.setPixmap(x)
         #Формула выборочной дисперсии
         d = mathTex_to_QPixmap(r"$D_{в} = X^{2} - (\overline{X_{в}})^{2}$", 20)
         self.ui.formulaD.setPixmap(d)
+        self.ui.formulaD_2.setPixmap(d)
+        self.ui.formulaD_3.setPixmap(d)
         #Формула выборочного среднего квадратического отклонения
         sigma = mathTex_to_QPixmap(r"$\sigma_{в} = \sqrt{D_{в}}$", 20)
         self.ui.formulaSigma.setPixmap(sigma)
+        self.ui.formulaSigma_2.setPixmap(sigma)
+        self.ui.formulaSigma_3.setPixmap(sigma)
+        
         #Формула выборочного среднего квадратического отклонения
-        s = mathTex_to_QPixmap(r"$S_{в} = \sqrt{D_{в}}$", 20)
-        self.ui.formulaS.setText("S = что это такое?")
+        s = mathTex_to_QPixmap(r"$S_{в} = \frac{1}{n-1} \sum_{i=1}^{n} x_{i} * m_{i}}$", 20)
+        self.ui.formulaS.setPixmap(s)
+        self.ui.formulaS_2.setPixmap(s)
+        self.ui.formulaS_3.setPixmap(s)
+        
         
         #поменять высоту ячеек в таблице
         self.ui.rowsTable.verticalHeader().setDefaultSectionSize(40)
@@ -50,7 +65,7 @@ class MainWindow(QMainWindow):
         self.ui.openFileBtn_3.clicked.connect(self.openFileBtnClicked_3)
         self.ui.frequencyPolygonBtn.clicked.connect(self.generateFrequencyPolygon)
         self.ui.relativeFrequencyPolygonBtn.clicked.connect(self.generateRelativeFrequencyPolygon)
-        self.ui.empiricalFunctionBtn.clicked.connect(self.generateEmpiricalFunction)
+        self.ui.empiricalFunctionBtn.clicked.connect(lambda x: (graph.drawEmpiricalGraph(self.empiricalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
         self.ui.firstTask.clicked.connect(lambda x: (self.setCurrentMode(0)))
         self.ui.secondTask.clicked.connect(lambda x: (self.setCurrentMode(1)))
         self.ui.thirdTask.clicked.connect(lambda x: (self.setCurrentMode(2)))
@@ -58,20 +73,39 @@ class MainWindow(QMainWindow):
         #Задание 2
         self.ui.frequencyHistogramBtn_2.clicked.connect(self.frequencyHistogram2)
         self.ui.relativeFrequencyHistogramBtn_2.clicked.connect(self.relativeFrequencyHistogram2)
-        self.ui.empiricalIntervalFunctionBtn_2.clicked.connect(self.empiricalIntervalFunction2)
-        self.ui.empiricalGroupFunctionBtn_2.clicked.connect(self.empiricalGroupFunction2)
+        self.ui.empiricalIntervalFunctionBtn_2.clicked.connect(lambda x: (graph.drawEmpiricalGraph(self.empiricalIntervalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
+        self.ui.empiricalGroupFunctionBtn_2.clicked.connect(lambda x: (graph.drawEmpiricalGraph(self.empiricalGroupFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
         self.ui.frequencyPolygonBtn_2.clicked.connect(self.frequencyPolygon2)
         self.ui.relativeFrequencyPolygonBtn_2.clicked.connect(self.relativeFrequencyPolygon2)
         
         #Задание 3
         self.ui.frequencyHistogramBtn_3.clicked.connect(self.frequencyHistogram2)
         self.ui.relativeFrequencyHistogramBtn_3.clicked.connect(self.relativeFrequencyHistogram2)
-        self.ui.empiricalIntervalFunctionBtn_3.clicked.connect(self.empiricalIntervalFunction2)
-        self.ui.empiricalGroupFunctionBtn_3.clicked.connect(self.empiricalGroupFunction2)
+        self.ui.empiricalIntervalFunctionBtn_3.clicked.connect(lambda x: (graph.drawEmpiricalGraph(self.empiricalIntervalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
+        self.ui.empiricalGroupFunctionBtn_3.clicked.connect(lambda x: (graph.drawEmpiricalGraph(self.empiricalGroupFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
         self.ui.frequencyPolygonBtn_3.clicked.connect(self.frequencyPolygon2)
         self.ui.relativeFrequencyPolygonBtn_3.clicked.connect(self.relativeFrequencyPolygon2)
         
+        #------------------------------------------------------
+        #Тест вставки эмпирической функции
+        # testEmpirical = {
+        #     'start': [4.25, 4.45, 4.55, 4.65, 4.85], 
+        #     'end': [4.45, 4.55, 4.65, 4.85, 4.949999999999999], 
+        #     'y': [0.27, 0.49, 0.72, 0.82, 1]}
         
+        # #Создать строчку Latex из библиотеки matplotLib, в которой будет система эмпирическоф функции по шаблону: F(x) = {[start[i], end[i]]: y[i]}
+        # latexStr = r"$F(x)= \begin{cases} "
+        # for i in range(len(testEmpirical['start'])):
+        #     latexStr += str(testEmpirical['y'][i])
+        #     latexStr += r" & \text{при } x \in [" + str(testEmpirical['start'][i]) + r", " + str(testEmpirical['end'][i]) + r"]"
+        #     if i != len(testEmpirical['start']) - 1:
+        #         latexStr += r" \\ "
+        # latexStr += r" \end{cases}$"
+        
+        # pixmap = mathTex_to_QPixmap_system(latexStr, 20)
+        # self.ui.empiricalLatex_1.setPixmap(pixmap)
+        
+        #------------------------------------------------------
         
         self.setCurrentMode(0)
         
@@ -121,8 +155,14 @@ class MainWindow(QMainWindow):
             #Вывести сигма выборочное
             self.ui.lineSigma.setText(str(round(getSigma(self.currentArray),2)))
             #Вывести результат S
-            self.ui.lineS.setText(str(round(getS(self.currentArray),2)))           
-    
+            self.ui.lineS.setText(str(round(getS(self.currentArray),2)))  
+            #Посчитать эмпирическую функцию
+            self.empiricalFunction = self.generateEmpiricalFunction()
+            #вывести эмпирическую функцию если включена настройка
+            if self.generateDynamicEmpirical:
+                self.setEmpirical(self.ui.empiricalLatex_1, self.empiricalFunction)
+                    
+
     @Slot()    
     def openFileBtnClicked_2(self):
         #Выбор файла с помощью диалогового окна QfileDialog
@@ -175,6 +215,17 @@ class MainWindow(QMainWindow):
             self.ui.lineSigma_2.setText(str(round(getSigma(array), 2)))
             #Вывести результат S
             self.ui.lineS_2.setText(str(round(getS(array),2)))
+            #Посчитать эмпирическую функцию
+            self.empiricalIntervalFunction = self.empiricalIntervalFunction2()
+            #Вывести эмпирическую функцию
+            if self.generateDynamicEmpirical:
+                self.setEmpirical(self.ui.empiricalIntervalLatex_2, self.empiricalIntervalFunction)
+            #Посчитать эмипирическую функцию для группированного ряда
+            self.empiricalGroupFunction = self.empiricalGroupFunction2()
+            #Вывести эмпирическую функцию для группированного ряда
+            if self.generateDynamicEmpirical:
+                self.setEmpirical(self.ui.empiricalGroupLatex_2, self.empiricalGroupFunction)
+            
             
     @Slot()    
     def openFileBtnClicked_3(self):
@@ -213,6 +264,16 @@ class MainWindow(QMainWindow):
             self.ui.lineSigma_3.setText(str(round(getSigma(array), 2)))
             #Вывести результат S
             self.ui.lineS_3.setText(str(round(getS(array),2)))
+            #Посчитать эмпирическую функцию
+            self.empiricalIntervalFunction = self.empiricalIntervalFunction2()
+            #Вывести эмпирическую функцию
+            if self.generateDynamicEmpirical:
+                self.setEmpirical(self.ui.empiricalIntervalLatex_3, self.empiricalIntervalFunction)
+            #Посчитать эмипирическую функцию для группированного ряда
+            self.empiricalGroupFunction = self.empiricalGroupFunction2()
+            #Вывести эмпирическую функцию для группированного ряда
+            if self.generateDynamicEmpirical:
+                self.setEmpirical(self.ui.empiricalGroupLatex_3, self.empiricalGroupFunction)
             
     
     @Slot()
@@ -286,13 +347,8 @@ class MainWindow(QMainWindow):
     
     @Slot()
     def generateEmpiricalFunction(self):
-        print("График эмпирической функции успешно построен")
-        #Создать график эмпирической функции
-        #Получение данных из таблицы
         relativefrequencyRow = getFrequencyRow(self.currentArray, RowType.RELATIVE_FREQUENCY)
         
-        #Построение графика в отдельном окне
-        #Получение данных для графика
         x = relativefrequencyRow['numbers']
         np.append(x, 999)
         empiricalFunction = {
@@ -311,9 +367,10 @@ class MainWindow(QMainWindow):
         empiricalFunction['start'].append(lastx)
         empiricalFunction['end'].append(lastx+xMinDiff) 
         empiricalFunction['y'].append(1)
-            
+        
+        return empiricalFunction
         #Построение разорванного графика
-        graph.drawEmpiricalGraph(empiricalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+        
     
     @Slot()
     def showIntervalRow(self, table):
@@ -457,10 +514,10 @@ class MainWindow(QMainWindow):
         intervalEmpirical['end'].append(lastx+xMinDiff) 
         intervalEmpirical['y'].append(1)
         
-        #Построение разорванного графика
-        graph.drawEmpiricalGraph(intervalEmpirical, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+
         
         print("intervalEmpirical: ", intervalEmpirical)
+        return intervalEmpirical
         
     
     @Slot()
@@ -486,10 +543,10 @@ class MainWindow(QMainWindow):
         groupEmpirical['end'].append(lastx+xMinDiff) 
         groupEmpirical['y'].append(1)
             
-        #Построение разорванного графика
-        graph.drawEmpiricalGraph(groupEmpirical, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
-            
         print("groupEmpirical: ", groupEmpirical)
+        return groupEmpirical
+            
+        
 
     
     @Slot()
@@ -528,6 +585,21 @@ class MainWindow(QMainWindow):
 
             
         print("relativeFrequencyPolygon2: ", relativeFrequencyPolygon)
+        
+    @Slot()
+    def setEmpirical(self, widget, empiricalFunction):
+        #Создать строчку Latex из библиотеки matplotLib, в которой будет система эмпирическоф функции по шаблону: F(x) = {[start[i], end[i]]: y[i]}
+        latexStr = r"$F(x)= \begin{cases} "
+        for i in range(len(empiricalFunction['start'])):
+            latexStr += str(empiricalFunction['y'][i])
+            latexStr += r" & \text{при } x \in [" + str(empiricalFunction['start'][i]) + r", " + str(empiricalFunction['end'][i]) + r"]"
+            if i != len(empiricalFunction['start']) - 1:
+                latexStr += r" \\ "
+        latexStr += r" \end{cases}$"
+        
+        pixmap = mathTex_to_QPixmap_system(latexStr, 20)
+        widget.setPixmap(pixmap)
+        
         
         
 if __name__ == "__main__":
