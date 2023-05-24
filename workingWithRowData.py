@@ -31,7 +31,7 @@ def getFrequencyRow(numbersArray, type : RowType):
 #характеристик выборки: X выборочное, D выборочное, сигма выборочное, S
 
 def getX(numbersArray):
-    return np.mean(numbersArray)
+    return (1/len(numbersArray)) * np.sum(numbersArray)
 
 #выборочная дисперсия
 def getD(numbersArray):
@@ -39,10 +39,10 @@ def getD(numbersArray):
 
 #выборочное среднее квадратическое отклонение
 def getSigma(numbersArray):
-    return np.std(numbersArray)
+    return np.sqrt(getD(numbersArray))
 
 def getS(numbersArray):
-    return np.sqrt(getD(numbersArray))
+    return (1/(len(numbersArray) - 1)) * np.sum(numbersArray )
 
 
 #Разбить на минимальное количество интервалов, чтобы частота каждого интервала была не меньше заданной
