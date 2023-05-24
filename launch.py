@@ -2,7 +2,7 @@ import math
 import sys
 import re
 from mainwindow import Ui_MainWindow
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QMessageBox, QListWidgetItem, QFileDialog, QTableWidgetItem
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QMessageBox, QListWidgetItem, QFileDialog, QTableWidgetItem, QTableWidget, QHeaderView, QSizePolicy
 from PySide6.QtCore import Slot, Signal, Qt
 from PySide6.QtGui import QIcon
 from qpixmapCreator import mathTex_to_QPixmap, mathTex_to_QPixmap_system
@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import graphingFunctions as graph
+from graphingFunctions import roundValue
 
 
 class MainWindow(QMainWindow):
@@ -25,32 +26,32 @@ class MainWindow(QMainWindow):
         self.mode = 0
         self.currentArray = []
         self.currentIntervals = []
+        
         #Минимальный размер ряда
-        self.minFrequency = 5
+        self.minFrequency = 1
         
         #Включить/выключить динамическую генерацию эмпмрических функций
-        self.generateDynamicEmpirical = False
+        self.generateDynamicEmpirical = True
         
         #Как записывается формула: r"$Твоя формула$"
-        qpixmap = mathTex_to_QPixmap(r"$P_{n} (m) = C^{m}_{n}*p^{m}*q^{n-m} $", 20)
         #Формула среднего выборочного
-        x = mathTex_to_QPixmap(r"$\overline{X_{в}} = \frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", 20)
+        x = mathTex_to_QPixmap(r"$\overline{X_{в}} = \frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", 16)
         self.ui.formulaX.setPixmap(x)
         self.ui.formulaX_2.setPixmap(x)
         self.ui.formulaX_3.setPixmap(x)
         #Формула выборочной дисперсии
-        d = mathTex_to_QPixmap(r"$D_{в} = X^{2} - (\overline{X_{в}})^{2}$", 20)
+        d = mathTex_to_QPixmap(r"$D_{в} = X^{2} - (\overline{X_{в}})^{2}$", 16)
         self.ui.formulaD.setPixmap(d)
         self.ui.formulaD_2.setPixmap(d)
         self.ui.formulaD_3.setPixmap(d)
         #Формула выборочного среднего квадратического отклонения
-        sigma = mathTex_to_QPixmap(r"$\sigma_{в} = \sqrt{D_{в}}$", 20)
+        sigma = mathTex_to_QPixmap(r"$\sigma_{в} = \sqrt{D_{в}}$", 16)
         self.ui.formulaSigma.setPixmap(sigma)
         self.ui.formulaSigma_2.setPixmap(sigma)
         self.ui.formulaSigma_3.setPixmap(sigma)
         
         #Формула выборочного среднего квадратического отклонения
-        s = mathTex_to_QPixmap(r"$S_{в} = \frac{1}{n-1} \sum_{i=1}^{n} x_{i} * m_{i}}$", 20)
+        s = mathTex_to_QPixmap(r"$S_{в} = \frac{1}{n-1} \sum_{i=1}^{n} x_{i} * m_{i}}$", 16)
         self.ui.formulaS.setPixmap(s)
         self.ui.formulaS_2.setPixmap(s)
         self.ui.formulaS_3.setPixmap(s)
@@ -143,19 +144,19 @@ class MainWindow(QMainWindow):
             print("Файл успешно открыт")
             
             #Очистить таблицу
-            self.ui.rowsTable.clear()
+            self.ui.rowsTable.clearContents()
             #Вывести вариационный ряд
             self.showVariationRow()
             #Вывести статистический ряд частот
             self.showFrequencyRows()
             #Вывести D выборочное
-            self.ui.lineD.setText(str(round(getD(self.currentArray),2)))
+            self.ui.lineD.setText(str(roundValue(getD(self.currentArray))))
             #Вывести x выборочное
-            self.ui.lineX.setText(str(round(getX(self.currentArray),2)))
+            self.ui.lineX.setText(str(roundValue(getX(self.currentArray))))
             #Вывести сигма выборочное
-            self.ui.lineSigma.setText(str(round(getSigma(self.currentArray),2)))
+            self.ui.lineSigma.setText(str(roundValue(getSigma(self.currentArray))))
             #Вывести результат S
-            self.ui.lineS.setText(str(round(getS(self.currentArray),2)))  
+            self.ui.lineS.setText(str(roundValue(getS(self.currentArray))))  
             #Посчитать эмпирическую функцию
             self.empiricalFunction = self.generateEmpiricalFunction()
             #вывести эмпирическую функцию если включена настройка
@@ -208,13 +209,13 @@ class MainWindow(QMainWindow):
             array = np.repeat(self.groupRow['numbers'], self.groupRow['numerators'])
             
             #Вывести D выборочное
-            self.ui.lineD_2.setText(str(round(getD(array),2)))
+            self.ui.lineD_2.setText(str(roundValue(getD(array))))
             #Вывести x выборочное
-            self.ui.lineX_2.setText(str(round(getX(array), 2)))
+            self.ui.lineX_2.setText(str(roundValue(getX(array))))
             #Вывести сигма выборочной
-            self.ui.lineSigma_2.setText(str(round(getSigma(array), 2)))
+            self.ui.lineSigma_2.setText(str(roundValue(getSigma(array))))
             #Вывести результат S
-            self.ui.lineS_2.setText(str(round(getS(array),2)))
+            self.ui.lineS_2.setText(str(roundValue(getS(array))))
             #Посчитать эмпирическую функцию
             self.empiricalIntervalFunction = self.empiricalIntervalFunction2()
             #Вывести эмпирическую функцию
@@ -257,13 +258,13 @@ class MainWindow(QMainWindow):
             array = np.repeat(self.groupRow['numbers'], self.groupRow['numerators'])
             
             #Вывести D выборочное
-            self.ui.lineD_3.setText(str(round(getD(array),2)))
+            self.ui.lineD_3.setText(str(roundValue(getD(array))))
             #Вывести x выборочное
-            self.ui.lineX_3.setText(str(round(getX(array), 2)))
+            self.ui.lineX_3.setText(str(roundValue(getX(array))))
             #Вывести сигма выборочной
-            self.ui.lineSigma_3.setText(str(round(getSigma(array), 2)))
+            self.ui.lineSigma_3.setText(str(roundValue(getSigma(array))))
             #Вывести результат S
-            self.ui.lineS_3.setText(str(round(getS(array),2)))
+            self.ui.lineS_3.setText(str(roundValue(getS(array))))
             #Посчитать эмпирическую функцию
             self.empiricalIntervalFunction = self.empiricalIntervalFunction2()
             #Вывести эмпирическую функцию
@@ -310,6 +311,9 @@ class MainWindow(QMainWindow):
             newItem = QTableWidgetItem("")
             newItem.setData(Qt.DecorationRole, naturalFraction)
             self.ui.rowsTable.setItem(2, i, newItem)
+            
+        self.ui.rowsTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+            
         print("Статистический ряд относительных частот успешно выведен")
     
     @Slot()
@@ -357,15 +361,15 @@ class MainWindow(QMainWindow):
             'y': []
         }
         for i in range(len(x)-1):
-            empiricalFunction['start'].append(x[i]) 
-            empiricalFunction['end'].append(x[i+1])
-            empiricalFunction['y'].append(sum(relativefrequencyRow['numerators'][:i+1])/relativefrequencyRow['denominator'])
+            empiricalFunction['start'].append(roundValue(x[i])) 
+            empiricalFunction['end'].append(roundValue(x[i+1]))
+            empiricalFunction['y'].append(roundValue(sum(relativefrequencyRow['numerators'][:i+1])/relativefrequencyRow['denominator']))
         
         allX = [value for value in empiricalFunction["start"]] + [value for value in empiricalFunction["end"]] 
         xMinDiff = graph.minDiffInList(allX)
         lastx = empiricalFunction['end'][-1] 
-        empiricalFunction['start'].append(lastx)
-        empiricalFunction['end'].append(lastx+xMinDiff) 
+        empiricalFunction['start'].append(roundValue(lastx))
+        empiricalFunction['end'].append(roundValue(lastx+xMinDiff)) 
         empiricalFunction['y'].append(1)
         
         return empiricalFunction
@@ -373,9 +377,9 @@ class MainWindow(QMainWindow):
         
     
     @Slot()
-    def showIntervalRow(self, table):
+    def showIntervalRow(self, table: QTableWidget):
         #Очистка таблицы
-        table.clear()
+        table.clearContents()
         
         #Добавить столбцы в таблицу
         table.setColumnCount(len(self.intervalRow['start']))
@@ -398,17 +402,15 @@ class MainWindow(QMainWindow):
             newItem = QTableWidgetItem("")
             newItem.setData(Qt.DecorationRole, naturalFraction)
             table.setItem(2, i, newItem)
-            
-        #Добавить вертикальные заголовки
-        table.setVerticalHeaderItem(0, QTableWidgetItem("x(i);x(i+1)"))
-        table.setVerticalHeaderItem(1, QTableWidgetItem("n(i)"))
-        table.setVerticalHeaderItem(1, QTableWidgetItem("W(i)"))
+        
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        
         print("Интервальный ряд частот и относительных частот успешно построен")
         
     @Slot()
     def showGroupRow(self,table):
         #Очистка таблицы
-        table.clear()
+        table.clearContents()
        
         #Добавить столбцы в таблицу
         table.setColumnCount(len(self.intervalRow['start']))
@@ -445,11 +447,9 @@ class MainWindow(QMainWindow):
             newItem = QTableWidgetItem("")
             newItem.setData(Qt.DecorationRole, naturalFraction)
             table.setItem(2, i, newItem)
-            
-        #Добавить вертикальные заголовки
-        table.setVerticalHeaderItem(0, QTableWidgetItem("x(i)"))
-        table.setVerticalHeaderItem(1, QTableWidgetItem("n(i)"))
-        table.setVerticalHeaderItem(1, QTableWidgetItem("W(i)"))
+           
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        
         print("Группированный ряд частот и относительных частот успешно построен")
             
     @Slot()
@@ -462,9 +462,9 @@ class MainWindow(QMainWindow):
         }
         
         for i in range(len(self.intervalRow['start'])):
-            frequencyHistogram['start'].append(self.intervalRow['start'][i])
-            frequencyHistogram['end'].append(self.intervalRow['end'][i])
-            frequencyHistogram['frequency'].append(self.intervalRow['frequency'][i])
+            frequencyHistogram['start'].append(roundValue(self.intervalRow['start'][i]))
+            frequencyHistogram['end'].append(roundValue(self.intervalRow['end'][i]))
+            frequencyHistogram['frequency'].append(roundValue(self.intervalRow['frequency'][i]))
         
         
         graph.drawHistogramGraph(frequencyHistogram, xLabel="x", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
@@ -482,9 +482,9 @@ class MainWindow(QMainWindow):
         }
         
         for i in range(len(self.intervalRow['start'])):
-            relativeIntervalRow['start'].append(self.intervalRow['start'][i])
-            relativeIntervalRow['end'].append(self.intervalRow['end'][i])
-            relativeIntervalRow['relativeFrequency'].append(self.intervalRow['frequency'][i] / sum(self.intervalRow['frequency']))
+            relativeIntervalRow['start'].append(roundValue(self.intervalRow['start'][i]))
+            relativeIntervalRow['end'].append(roundValue(self.intervalRow['end'][i]))
+            relativeIntervalRow['relativeFrequency'].append(roundValue(self.intervalRow['frequency'][i] / sum(self.intervalRow['frequency'])))
         
         graph.drawHistogramGraph(relativeIntervalRow, xLabel="x", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
         
@@ -502,16 +502,16 @@ class MainWindow(QMainWindow):
         }
         
         for i in range(1, len(self.intervalRow['start'])):
-            intervalEmpirical['start'].append(self.intervalRow['start'][i])
-            intervalEmpirical['end'].append(self.intervalRow['end'][i])
-            intervalEmpirical['y'].append(sum(self.intervalRow['frequency'][:i]) / sum(self.intervalRow['frequency']))
+            intervalEmpirical['start'].append(roundValue(self.intervalRow['start'][i]))
+            intervalEmpirical['end'].append(roundValue(self.intervalRow['end'][i]))
+            intervalEmpirical['y'].append(roundValue(sum(self.intervalRow['frequency'][:i]) / sum(self.intervalRow['frequency'])))
         
         # Добавить последнюю точку равную 1
         allX = [value for value in intervalEmpirical["start"]] + [value for value in intervalEmpirical["end"]] 
         xMinDiff = graph.minDiffInList(allX)
         lastx = intervalEmpirical['end'][-1] 
-        intervalEmpirical['start'].append(lastx)
-        intervalEmpirical['end'].append(lastx+xMinDiff) 
+        intervalEmpirical['start'].append(roundValue(lastx))
+        intervalEmpirical['end'].append(roundValue(lastx+xMinDiff)) 
         intervalEmpirical['y'].append(1)
         
 
@@ -531,16 +531,16 @@ class MainWindow(QMainWindow):
             'y': []
         }
         for i in range(len(x)-1):
-            groupEmpirical['start'].append(x[i]) 
-            groupEmpirical['end'].append(x[i+1])
-            groupEmpirical['y'].append(sum(self.groupRow['numerators'][:i+1])/self.groupRow['denominator'])
+            groupEmpirical['start'].append(roundValue(x[i])) 
+            groupEmpirical['end'].append(roundValue(x[i+1]))
+            groupEmpirical['y'].append(roundValue(sum(self.groupRow['numerators'][:i+1])/self.groupRow['denominator']))
         
         # Добавить последнюю точку равную 1
         allX = [value for value in groupEmpirical["start"]] + [value for value in groupEmpirical["end"]] 
         xMinDiff = graph.minDiffInList(allX)
         lastx = groupEmpirical['end'][-1] 
-        groupEmpirical['start'].append(lastx)
-        groupEmpirical['end'].append(lastx+xMinDiff) 
+        groupEmpirical['start'].append(roundValue(lastx))
+        groupEmpirical['end'].append(roundValue(lastx+xMinDiff)) 
         groupEmpirical['y'].append(1)
             
         print("groupEmpirical: ", groupEmpirical)
@@ -597,9 +597,14 @@ class MainWindow(QMainWindow):
                 latexStr += r" \\ "
         latexStr += r" \end{cases}$"
         
-        pixmap = mathTex_to_QPixmap_system(latexStr, 20)
-        widget.setPixmap(pixmap)
+       
+        pixmap = mathTex_to_QPixmap_system(latexStr, 50)             
+
+        #Без этого после сворачивания окна qPixMap поломает пропорции окна, а так просто картинку обрежет
+        widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored)
         
+        #Ставим qPixMap'у размер его label'а
+        widget.setPixmap(pixmap.scaled(widget.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)) 
         
         
 if __name__ == "__main__":

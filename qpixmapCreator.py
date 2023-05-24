@@ -7,13 +7,6 @@ from PySide6 import QtGui, QtCore
 
 def mathTex_to_QPixmap(mathTex, fs):
 
-    # #Ебанина со стаковерфлоу
-    # mpl.rcParams.update(mpl.rcParamsDefault)
-    # mpl.rcParams['text.usetex'] = True
-    # mpl.rcParams['text.latex.preamble'] = r''
-    # mpl.rcParams['text.usetex'] = False
-    # mpl.rcParams.update(mpl.rcParamsDefault)
-
 
     #---- set up a mpl figure instance ----
 
@@ -52,9 +45,6 @@ def mathTex_to_QPixmap(mathTex, fs):
 
 def mathTex_to_QPixmap_system(mathTex, fs):
 
-    # #Ебанина со стаковерфлоу
-    # mpl.rcParams.update(mpl.rcParamsDefault)
-    # mpl.rcParams['text.usetex'] = True
     mpl.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}} \usepackage[english,main=russian]{babel} \usepackage[T2A]{fontenc}'
     mpl.rcParams['text.usetex'] = True
 

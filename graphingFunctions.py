@@ -2,6 +2,9 @@ from mpl_toolkits.axisartist.axislines import SubplotZero
 import matplotlib.pyplot as plt
 import numpy as np
 
+def roundValue(value):
+        return round(value, 2)
+
 def removeBordersAndAddArrows(ax):    
     ax.spines['left'].set_position('zero')
     ax.spines['right'].set_visible(False)
@@ -143,6 +146,8 @@ def drawPolygonGraph(x, y, xLabel="", yLabel="", color="black", width=2, dashCol
     
 def minDiffInList(lst):
     sorted_lst = sorted(set(lst))
+    if len(sorted_lst) < 2:
+        return sorted_lst[0]
     return min(n2 - n1 for n1, n2 in zip(sorted_lst, sorted_lst[1:]))
         
 def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", width=2, dashColor="black", dashAlpha=0.5, dashWidth=0.7, fullscreenStart=True, tickFontSize=11):       
