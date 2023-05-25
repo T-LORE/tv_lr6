@@ -112,10 +112,35 @@ def min_sum(arr):
 
 #Разбить на заданное количество интервалов
 def split(arr, maxIntervals, minFrequency = 5):
-    intervals = split_array_into_intervals(arr, minFrequency)
-    if len(intervals['start']) < maxIntervals:
-        raise ValueError("Невозможно разбить на заданное количество интервалов")
-    while len(intervals['start']) > maxIntervals:
-        intervals = min_sum(intervals)
-    return intervals
+    arr = np.sort(arr)
+    
+    diff = (arr[-1] - arr[0]) / maxIntervals
+    
+    intervals = {
+        'start' : [],
+        'end' : [],
+        'frequency' : []
+    }
+    
+    for i in range(maxIntervals):
+        intervals['start'].append(arr[0] + diff * i)
+        intervals['end'].append(arr[0] + diff * (i + 1))
+        intervals['frequency'].append(0)
+        
+    for i in range(len(arr)):
+        for j in range(len(intervals['start'])):
+            if arr[i] >= intervals['start'][j] and arr[i] < intervals['end'][j]:
+                intervals['frequency'][j] += 1
+                break
+    print(intervals)
+    return intervals    
+        
+    
+    # intervals = split_array_into_intervals(arr, minFrequency)
+    # if len(intervals['start']) < maxIntervals:
+    #     raise ValueError("Невозможно разбить на заданное количество интервалов")
+    # while len(intervals['start']) > maxIntervals:
+    #     intervals = min_sum(intervals)
+    # return intervals
+
 

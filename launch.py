@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
             file = open(fileName, 'r')
             
             #Чтение массива целых чисел из файла
-            self.currentArray = np.loadtxt(file, dtype=int)
+            self.currentArray = np.loadtxt(file, dtype=float)
            
             #Закрытие файла
             file.close()
@@ -343,6 +343,10 @@ class MainWindow(QMainWindow):
         x = relativeFrequencyRow['numbers']
         y = relativeFrequencyRow['numerators']/relativeFrequencyRow['denominator']
         
+        #Округление
+        x = [roundValue(i) for i in x]
+        y = [roundValue(i) for i in y]
+        
         #Построение графика
         graph.drawPolygonGraph(x, y, xLabel="Число", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
         
@@ -464,7 +468,8 @@ class MainWindow(QMainWindow):
         for i in range(len(self.intervalRow['start'])):
             frequencyHistogram['start'].append(roundValue(self.intervalRow['start'][i]))
             frequencyHistogram['end'].append(roundValue(self.intervalRow['end'][i]))
-            frequencyHistogram['frequency'].append(roundValue(self.intervalRow['frequency'][i]))
+            intervalLen = self.intervalRow['end'][i]-self.intervalRow['start'][i]
+            frequencyHistogram['frequency'].append(roundValue(self.intervalRow['frequency'][i]/intervalLen))
         
         
         graph.drawHistogramGraph(frequencyHistogram, xLabel="x", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
@@ -484,7 +489,11 @@ class MainWindow(QMainWindow):
         for i in range(len(self.intervalRow['start'])):
             relativeIntervalRow['start'].append(roundValue(self.intervalRow['start'][i]))
             relativeIntervalRow['end'].append(roundValue(self.intervalRow['end'][i]))
-            relativeIntervalRow['relativeFrequency'].append(roundValue(self.intervalRow['frequency'][i] / sum(self.intervalRow['frequency'])))
+            
+            intervalLen = self.intervalRow['end'][i] - self.intervalRow['start'][i]
+            frequencySum = sum(self.intervalRow['frequency'])
+            relativeFreaquency = self.intervalRow['frequency'][i] / frequencySum
+            relativeIntervalRow['relativeFrequency'].append(roundValue(relativeFreaquency / intervalLen))
         
         graph.drawHistogramGraph(relativeIntervalRow, xLabel="x", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
         
@@ -577,8 +586,8 @@ class MainWindow(QMainWindow):
         }
         
         for i in range(len(self.groupRow['numbers'])):
-            relativeFrequencyPolygon['x'].append(self.groupRow['numbers'][i])
-            relativeFrequencyPolygon['y'].append(self.groupRow['numerators'][i] / self.groupRow['denominator'])
+            relativeFrequencyPolygon['x'].append(roundValue(self.groupRow['numbers'][i]))
+            relativeFrequencyPolygon['y'].append(roundValue(self.groupRow['numerators'][i] / self.groupRow['denominator']))
             
             
         graph.drawPolygonGraph(relativeFrequencyPolygon['x'], relativeFrequencyPolygon['y'], xLabel="Число", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
@@ -604,7 +613,29 @@ class MainWindow(QMainWindow):
         widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored)
         
         #Ставим qPixMap'у размер его label'а
-        widget.setPixmap(pixmap.scaled(widget.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)) 
+        widget.setPixmap(pixmap.scaled(widget.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+        #widget.setPixmap(pixmap) 
+        
+    @Slot()
+    def fillTableWithArray(self,tableWidget : QTableWidget, array, row):
+        
+        if tableWidget.rowCount() < row + 1:
+            tableWidget.setRowCount(row + 1)
+        if tableWidget.columnCount() < len(array):
+            tableWidget.setColumnCount(len(array))
+           
+        if type(array[0]) == QPixmap:
+            for i in range(len(array)):
+                newItem = QTableWidgetItem("")
+                newItem.setData(Qt.DecorationRole, array[i])
+                tableWidget.setItem(2, i, newItem)
+        else:
+             for i in range(len(array)):
+                tableWidget.setItem(row, i, QTableWidgetItem(str(array[i])))
+            
+        
+        tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        tableWidget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         
         
 if __name__ == "__main__":

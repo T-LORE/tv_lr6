@@ -1,9 +1,18 @@
 from mpl_toolkits.axisartist.axislines import SubplotZero
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
-def roundValue(value):
-        return round(value, 2)
+def roundValue(num, digits=2):
+    if num == 0: return 0
+    
+    absNum = abs(num - int(num))
+    if absNum == 0: return num
+    
+    scale = int(-math.floor(math.log10(absNum))) + digits - 1
+    if scale < digits: scale = digits
+    return round(num, scale)
+
 
 def removeBordersAndAddArrows(ax):    
     ax.spines['left'].set_position('zero')
@@ -80,13 +89,13 @@ def drawPolygonGraph(x, y, xLabel="", yLabel="", color="black", width=2, dashCol
         
             #Находим смещение для всех X
             xFirst = min(allX)
-            xDeltaForScaling = xFirst - xMinDiff        
+            xDeltaForScaling = xFirst - 2*xMinDiff        
             
             xUseScaling = xDeltaForScaling > 0.5 * xMinDiff
             
             #Находим смещение для всех Y
             yFirst = min(allY)
-            yDeltaForScaling = yFirst - 2*yMinDiff 
+            yDeltaForScaling = yFirst - 4*yMinDiff 
             
             yUseScaling = yDeltaForScaling > 0.5 * yMinDiff
 
@@ -174,7 +183,7 @@ def drawEmpiricalGraph(empiricalFunction, xLabel="", yLabel="", color="black", w
     
         #Находим смещение для всех X
         xFirst = min(allX)
-        xDeltaForScaling = xFirst - xMinDiff        
+        xDeltaForScaling = xFirst - 2*xMinDiff        
         
         useScaling = xDeltaForScaling > 0.5 * xMinDiff
         
@@ -270,13 +279,13 @@ def drawHistogramGraph(histogramFunction, xLabel="", yLabel="", color="black", w
     
         #Находим смещение для всех X
         xFirst = min(allX)
-        xDeltaForScaling = xFirst - xMinDiff        
+        xDeltaForScaling = xFirst - 2*xMinDiff        
         
         xUseScaling = xDeltaForScaling > 0.5 * xMinDiff
         
         #Находим смещение для всех Y
         yFirst = min(allY)
-        yDeltaForScaling = yFirst - 2*yMinDiff 
+        yDeltaForScaling = yFirst - 4*yMinDiff 
         
         yUseScaling = yDeltaForScaling > 0.5 * yMinDiff 
         
