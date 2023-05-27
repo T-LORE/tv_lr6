@@ -23,12 +23,10 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.mode = 0
+        self.mode = 1
+        
         self.currentArray = []
         self.currentIntervals = []
-        
-        #Минимальный размер ряда
-        self.minFrequency = 1
         
         #Включить/выключить динамическую генерацию эмпмрических функций
         self.generateDynamicEmpirical = True
@@ -57,21 +55,14 @@ class MainWindow(QMainWindow):
         self.ui.formulaS_3.setPixmap(s)
         
         
-        #поменять высоту ячеек в таблице
-        self.ui.rowsTable.verticalHeader().setDefaultSectionSize(40)
+        # #поменять высоту ячеек в таблице
+        # self.ui.rowsTable.verticalHeader().setDefaultSectionSize(40)
+        
         
         #Прописанные коннекты
-        self.ui.openFileBtn.clicked.connect(self.openFileBtnClicked_1)
-        self.ui.openFileBtn_2.clicked.connect(self.openFileBtnClicked_2)
-        self.ui.openFileBtn_3.clicked.connect(self.openFileBtnClicked_3)
-        self.ui.frequencyPolygonBtn.clicked.connect(self.generateFrequencyPolygon)
-        self.ui.relativeFrequencyPolygonBtn.clicked.connect(self.generateRelativeFrequencyPolygon)
-        self.ui.empiricalFunctionBtn.clicked.connect(lambda x: (graph.drawEmpiricalGraph(self.empiricalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
-        self.ui.firstTask.clicked.connect(lambda x: (self.setCurrentMode(0)))
+        #Задание 1 массив чисел
         self.ui.secondTask.clicked.connect(lambda x: (self.setCurrentMode(1)))
-        self.ui.thirdTask.clicked.connect(lambda x: (self.setCurrentMode(2)))
-        
-        #Задание 2
+        self.ui.openFileBtn_2.clicked.connect(self.openFileBtnClicked_2)
         self.ui.frequencyHistogramBtn_2.clicked.connect(self.frequencyHistogram2)
         self.ui.relativeFrequencyHistogramBtn_2.clicked.connect(self.relativeFrequencyHistogram2)
         self.ui.empiricalIntervalFunctionBtn_2.clicked.connect(lambda x: (graph.drawEmpiricalGraph(self.empiricalIntervalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
@@ -79,7 +70,9 @@ class MainWindow(QMainWindow):
         self.ui.frequencyPolygonBtn_2.clicked.connect(self.frequencyPolygon2)
         self.ui.relativeFrequencyPolygonBtn_2.clicked.connect(self.relativeFrequencyPolygon2)
         
-        #Задание 3
+        #Задание 1 интервалы
+        self.ui.thirdTask.clicked.connect(lambda x: (self.setCurrentMode(2)))
+        self.ui.openFileBtn_3.clicked.connect(self.openFileBtnClicked_3)
         self.ui.frequencyHistogramBtn_3.clicked.connect(self.frequencyHistogram2)
         self.ui.relativeFrequencyHistogramBtn_3.clicked.connect(self.relativeFrequencyHistogram2)
         self.ui.empiricalIntervalFunctionBtn_3.clicked.connect(lambda x: (graph.drawEmpiricalGraph(self.empiricalIntervalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
@@ -107,8 +100,7 @@ class MainWindow(QMainWindow):
         # self.ui.empiricalLatex_1.setPixmap(pixmap)
         
         #------------------------------------------------------
-        
-        self.setCurrentMode(0)
+        self.setCurrentMode(1)
         
     @Slot()
     def setCurrentMode(self, newMode: str):
