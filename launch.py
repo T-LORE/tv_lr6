@@ -165,8 +165,12 @@ class MainWindow(QMainWindow):
             #Вывести сигма выборочной
             self.ui.lineSigma_2.setText(str(roundValue(getSigma(array))))
             #Вывести результат aStar для нормального закона распределения
-            aStar = getX(array)
-            self.ui.lineAStar.setText(str(roundValue(getX(array))))
+            self.aStar = roundValue(getX(array))
+            self.ui.lineAStar.setText(str(self.aStar))
+            
+            #Вывести результат sigmaStar для нормального закона распределения
+            self.sigmaStar = roundValue(getSigma(array))
+            self.ui.lineSigmaStar.setText(str(self.sigmaStar))
             
             
             
