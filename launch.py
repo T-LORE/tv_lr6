@@ -13,6 +13,7 @@ import pyqtgraph as pg
 from mpl_toolkits.axisartist.axislines import SubplotZero
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats as stats    
 
 import graphingFunctions as graph
 from graphingFunctions import roundValue
@@ -171,6 +172,9 @@ class MainWindow(QMainWindow):
             #Вывести результат sigmaStar для нормального закона распределения
             self.sigmaStar = roundValue(getSigma(array))
             self.ui.lineSigmaStar.setText(str(self.sigmaStar))
+            
+            # Плотность нормального закона распределения через лямбда функцию испльзуя библиотеку scipy
+            self.densityFuncPtr = lambda x: stats.norm.pdf(x, self.aStar, self.sigmaStar)
             
             
             
