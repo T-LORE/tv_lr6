@@ -4,7 +4,7 @@ import re
 from mainwindow import Ui_MainWindow
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QMessageBox, QListWidgetItem, QFileDialog, QTableWidgetItem, QTableWidget, QHeaderView, QSizePolicy
 from PySide6.QtCore import Slot, Signal, Qt
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QPixmap
 from qpixmapCreator import mathTex_to_QPixmap, mathTex_to_QPixmap_system
 from workingWithRowData import getVariationRow, getFrequencyRow, RowType, getX, getD, getSigma, getS, split
 import numpy as np
@@ -48,12 +48,15 @@ class MainWindow(QMainWindow):
         self.ui.formulaSigma_2.setPixmap(sigma)
         self.ui.formulaSigma_3.setPixmap(sigma)
         
-        #Формула выборочного среднего квадратического отклонения
-        s = mathTex_to_QPixmap(r"$S_{в} = \frac{1}{n-1} \sum_{i=1}^{n} x_{i} * m_{i}}$", 16)
-        self.ui.formulaS.setPixmap(s)
-        self.ui.formulaS_2.setPixmap(s)
-        self.ui.formulaS_3.setPixmap(s)
+        #Формула A* (x выборочное)
+        aStar = mathTex_to_QPixmap(r"$a^{*} = \frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", 16)
+        self.ui.formulaA_2.setPixmap(aStar)
+        self.ui.formulaA_2.setPixmap(aStar)
+        self.ui.formulaA_2.setPixmap(aStar)
         
+        #Формула сигма* (обычная сигма)
+        sigmaStar = mathTex_to_QPixmap(r"$\sigma^{*} = \sqrt{D_{в}}$", 16)
+        self.ui.sigmaStar_2.setPixmap(sigmaStar)
         
         # #поменять высоту ячеек в таблице
         # self.ui.rowsTable.verticalHeader().setDefaultSectionSize(40)
@@ -65,10 +68,7 @@ class MainWindow(QMainWindow):
         self.ui.openFileBtn_2.clicked.connect(self.openFileBtnClicked_2)
         self.ui.frequencyHistogramBtn_2.clicked.connect(self.frequencyHistogram2)
         self.ui.relativeFrequencyHistogramBtn_2.clicked.connect(self.relativeFrequencyHistogram2)
-        self.ui.empiricalIntervalFunctionBtn_2.clicked.connect(lambda x: (graph.drawEmpiricalGraph(self.empiricalIntervalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
-        self.ui.empiricalGroupFunctionBtn_2.clicked.connect(lambda x: (graph.drawEmpiricalGraph(self.empiricalGroupFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
-        self.ui.frequencyPolygonBtn_2.clicked.connect(self.frequencyPolygon2)
-        self.ui.relativeFrequencyPolygonBtn_2.clicked.connect(self.relativeFrequencyPolygon2)
+       
         
         #Задание 1 интервалы
         self.ui.thirdTask.clicked.connect(lambda x: (self.setCurrentMode(2)))
@@ -113,49 +113,7 @@ class MainWindow(QMainWindow):
             self.ui.stackedWidget.setCurrentWidget(self.ui.page_3)
             
         print(f"Changed mode to { newMode }")
-        
-    
-    @Slot()    
-    def openFileBtnClicked_1(self):
-        #Выбор файла с помощью диалогового окна QfileDialog
-        fileName, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Текстовый файл (*.txt)")
-        if fileName:
-            #Открытие файла
-            file = open(fileName, 'r')
-            
-            #Чтение массива целых чисел из файла
-            self.currentArray = np.loadtxt(file, dtype=float)
-           
-            #Закрытие файла
-            file.close()
-            
-            #Вывод массива чисел в виджет через запятую
-            self.ui.fileBuffer.setText(np.array2string(self.currentArray, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[','').replace(']', ''))
-            
-            #Вывод сообщения в консоль
-            print("Файл успешно открыт")
-            
-            #Очистить таблицу
-            self.ui.rowsTable.clearContents()
-            #Вывести вариационный ряд
-            self.showVariationRow()
-            #Вывести статистический ряд частот
-            self.showFrequencyRows()
-            #Вывести D выборочное
-            self.ui.lineD.setText(str(roundValue(getD(self.currentArray))))
-            #Вывести x выборочное
-            self.ui.lineX.setText(str(roundValue(getX(self.currentArray))))
-            #Вывести сигма выборочное
-            self.ui.lineSigma.setText(str(roundValue(getSigma(self.currentArray))))
-            #Вывести результат S
-            self.ui.lineS.setText(str(roundValue(getS(self.currentArray))))  
-            #Посчитать эмпирическую функцию
-            self.empiricalFunction = self.generateEmpiricalFunction()
-            #вывести эмпирическую функцию если включена настройка
-            if self.generateDynamicEmpirical:
-                self.setEmpirical(self.ui.empiricalLatex_1, self.empiricalFunction)
                     
-
     @Slot()    
     def openFileBtnClicked_2(self):
         #Выбор файла с помощью диалогового окна QfileDialog
@@ -186,7 +144,7 @@ class MainWindow(QMainWindow):
                 # 'end' : [],
                 # 'frequency' : []
                 # }
-                self.intervalRow = split(self.currentArray, self.intervalCount, self.minFrequency)
+                self.intervalRow = split(self.currentArray, self.intervalCount)
             except ValueError as e:
                 print(e)
                 return
@@ -206,18 +164,10 @@ class MainWindow(QMainWindow):
             self.ui.lineX_2.setText(str(roundValue(getX(array))))
             #Вывести сигма выборочной
             self.ui.lineSigma_2.setText(str(roundValue(getSigma(array))))
-            #Вывести результат S
-            self.ui.lineS_2.setText(str(roundValue(getS(array))))
-            #Посчитать эмпирическую функцию
-            self.empiricalIntervalFunction = self.empiricalIntervalFunction2()
-            #Вывести эмпирическую функцию
-            if self.generateDynamicEmpirical:
-                self.setEmpirical(self.ui.empiricalIntervalLatex_2, self.empiricalIntervalFunction)
-            #Посчитать эмипирическую функцию для группированного ряда
-            self.empiricalGroupFunction = self.empiricalGroupFunction2()
-            #Вывести эмпирическую функцию для группированного ряда
-            if self.generateDynamicEmpirical:
-                self.setEmpirical(self.ui.empiricalGroupLatex_2, self.empiricalGroupFunction)
+            #Вывести результат aStar для нормального закона распределения
+            aStar = getX(array)
+            self.ui.lineAStar.setText(str(roundValue(getX(array))))
+            
             
             
     @Slot()    
