@@ -176,6 +176,10 @@ class MainWindow(QMainWindow):
             # Плотность нормального закона распределения через лямбда функцию испльзуя библиотеку scipy
             self.densityFuncPtr = lambda x: stats.norm.pdf(x, self.aStar, self.sigmaStar)
             
+            # Вывести формулу плотности нормального закона распределения в latex формате с подставленными значениями aStar и sigmaStar
+            self.setLatexForNormalDensity(self.ui.normalLawDensityLatex_2, self.aStar, self.sigmaStar)
+            
+            
             
             
     @Slot()    
@@ -586,6 +590,19 @@ class MainWindow(QMainWindow):
         
         tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         tableWidget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+    @Slot()
+    def setLatexForNormalDensity(self, widget, aStar, sigmaStar):
+        
+        firstFraction = r"\frac{1}{" + str(sigmaStar) + r"\sqrt{2\pi}}"
+        
+        exponentDegree = r"{-\frac{(x-" + str(aStar) + r")^2}{2 * " + str(sigmaStar) + r"^2}}"
+        
+        exponent = r"e^{" + exponentDegree + r"}"
+        
+        densityFormula = r"$f(x)= " + firstFraction + exponent + r"$"
+      
+        pixmap = mathTex_to_QPixmap_system(densityFormula, 50)
+        widget.setPixmap(pixmap.scaled(widget.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
         
         
 if __name__ == "__main__":

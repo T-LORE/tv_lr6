@@ -891,9 +891,9 @@ hr { height: 1px; border-width: 0; }
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
-             <widget class="QLabel" name="empiricalIntervalLatex_2">
+             <widget class="QLabel" name="normalLawDensityLatex_2">
               <property name="text">
-               <string>формула эмпирической функции для интервального ряда</string>
+               <string>Формула нормального закона</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
