@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QMessageBox, Q
 from PySide6.QtCore import Slot, Signal, Qt
 from PySide6.QtGui import QIcon, QPixmap
 from qpixmapCreator import mathTex_to_QPixmap, mathTex_to_QPixmap_system
-from workingWithRowData import getVariationRow, getFrequencyRow, RowType, getX, getD, getSigma, getS, split
+from workingWithRowData import getVariationRow, getFrequencyRow, RowType, getX, getD, getSigma, getS, split, getLamda, getTheoreticalProbability, gethi2ObservedArray
 import numpy as np
 import pyqtgraph as pg
 
@@ -63,23 +63,26 @@ class MainWindow(QMainWindow):
         # self.ui.rowsTable.verticalHeader().setDefaultSectionSize(40)
         
         
-        #Прописанные коннекты
-        #Задание 1 массив чисел
+        # Прописанные коннекты
+        # Задание 1
         self.ui.secondTask.clicked.connect(lambda x: (self.setCurrentMode(1)))
         self.ui.openFileBtn_2.clicked.connect(self.openFileBtnClicked_2)
         self.ui.frequencyHistogramBtn_2.clicked.connect(self.frequencyHistogram2)
         self.ui.relativeFrequencyHistogramBtn_2.clicked.connect(self.relativeFrequencyHistogram2)
        
         
-        #Задание 1 интервалы
+        #Задание 2
+        
+        self.ui.openFileBtn.clicked.connect(self.openFileBtnClicked_1)
+        
         self.ui.thirdTask.clicked.connect(lambda x: (self.setCurrentMode(2)))
-        self.ui.openFileBtn_3.clicked.connect(self.openFileBtnClicked_3)
-        self.ui.frequencyHistogramBtn_3.clicked.connect(self.frequencyHistogram2)
-        self.ui.relativeFrequencyHistogramBtn_3.clicked.connect(self.relativeFrequencyHistogram2)
-        self.ui.empiricalIntervalFunctionBtn_3.clicked.connect(lambda x: (graph.renderEmpiricalGraph(self.empiricalIntervalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
-        self.ui.empiricalGroupFunctionBtn_3.clicked.connect(lambda x: (graph.renderEmpiricalGraph(self.empiricalGroupFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
-        self.ui.frequencyPolygonBtn_3.clicked.connect(self.frequencyPolygon2)
-        self.ui.relativeFrequencyPolygonBtn_3.clicked.connect(self.relativeFrequencyPolygon2)
+        # self.ui.openFileBtn_3.clicked.connect(self.openFileBtnClicked_3)
+        # self.ui.frequencyHistogramBtn_3.clicked.connect(self.frequencyHistogram2)
+        # self.ui.relativeFrequencyHistogramBtn_3.clicked.connect(self.relativeFrequencyHistogram2)
+        # self.ui.empiricalIntervalFunctionBtn_3.clicked.connect(lambda x: (graph.renderEmpiricalGraph(self.empiricalIntervalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
+        # self.ui.empiricalGroupFunctionBtn_3.clicked.connect(lambda x: (graph.renderEmpiricalGraph(self.empiricalGroupFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
+        # self.ui.frequencyPolygonBtn_3.clicked.connect(self.frequencyPolygon2)
+        # self.ui.relativeFrequencyPolygonBtn_3.clicked.connect(self.relativeFrequencyPolygon2)
         
         #------------------------------------------------------
         #Тест вставки эмпирической функции
@@ -103,6 +106,8 @@ class MainWindow(QMainWindow):
         #------------------------------------------------------
         self.setCurrentMode(1)
         
+        self.openFileBtnClicked_1()
+        
     @Slot()
     def setCurrentMode(self, newMode: str):
         self.mode = newMode
@@ -114,6 +119,67 @@ class MainWindow(QMainWindow):
             self.ui.stackedWidget.setCurrentWidget(self.ui.page_3)
             
         print(f"Changed mode to { newMode }")
+      
+    @Slot()    
+    def openFileBtnClicked_1(self):
+        #Выбор файла с помощью диалогового окна QfileDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Текстовый файл (*.txt)")
+        if fileName:
+           #Открытие файла
+            file = open(fileName, 'r')
+            
+            #Чтение интервалов и их n из файла
+            self.puasonRow = np.genfromtxt(fileName, delimiter=',', names=True)
+           
+            #Закрытие файла
+            file.close()
+                        
+            #Вывод сообщения в консоль
+            print("Файл успешно открыт")
+            
+            print(self.puasonRow)
+            
+            self.lambd = getLamda(self.puasonRow)
+            
+            print(self.lambd)
+            
+            # print(getTheoreticalProbability(self.lambd, ))
+            
+            # print([getTheoreticalProbability(self.lambd, i) for i in self.puasonRow["x"]])
+            n = sum(self.puasonRow["m"])
+            pi = [getTheoreticalProbability(self.lambd, i ) for i in self.puasonRow["x"]]
+            npi = [n * i for i in pi]
+            complex1 = [ (pair[0] - n * pair[1])**2 for pair in zip(self.puasonRow["m"], pi) ]
+            complex2 = [ pair[0] / (n * pair[1]) for pair in zip(complex1, pi)]
+            
+            tableData = { "xi" : self.puasonRow["x"], "mi" : self.puasonRow["m"],  "pi" : pi, "n*pi" : npi, "(ni - npi)**2" : complex1, "(ni - npi)**2 / npi" : complex2}
+            for key in tableData.keys():
+                print(f"{key}: {tableData[key]}")
+            
+            k = len(self.puasonRow["m"]) - 2
+            
+            print(f"k = {k}")
+        
+            print(sum(gethi2ObservedArray(self.puasonRow["m"], pi)))
+            # #Очистить таблицу
+            # self.ui.rowsTable.clearContents()
+            # #Вывести вариационный ряд
+            # self.showVariationRow()
+            # #Вывести статистический ряд частот
+            # self.showFrequencyRows()
+            # #Вывести D выборочное
+            # self.ui.lineD.setText(str(roundValue(getD(self.currentArray))))
+            # #Вывести x выборочное
+            # self.ui.lineX.setText(str(roundValue(getX(self.currentArray))))
+            # #Вывести сигма выборочное
+            # self.ui.lineSigma.setText(str(roundValue(getSigma(self.currentArray))))
+            # #Вывести результат S
+            # self.ui.lineS.setText(str(roundValue(getS(self.currentArray))))  
+            # #Посчитать эмпирическую функцию
+            # self.empiricalFunction = self.generateEmpiricalFunction()
+            # #вывести эмпирическую функцию если включена настройка
+            # if self.generateDynamicEmpirical:
+            #     self.setEmpirical(self.ui.empiricalLatex_1, self.empiricalFunction)
                     
     @Slot()    
     def openFileBtnClicked_2(self):
