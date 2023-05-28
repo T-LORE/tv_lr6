@@ -305,7 +305,7 @@ def renderComplexHistogram(histogramFunction, densityFunc, xLabel="", yLabel="",
     drawLinesToPoints(subPlot, meanX, meanY, dashColor, dashAlpha, dashWidth, style="--", orientation="both", zorder=5)
     
     #Получаем точки для распределения
-    densityX = np.arange(allX[0], allX[-1], minDiffInList(allX) / 6)
+    densityX = np.linspace(min(allX), max(allX), int(max(allX) / (minDiffInList(allX) / 20)))
     densityY = [ densityFunc(i) for i in densityX ]
     
     #Масштабируем
@@ -317,5 +317,32 @@ def renderComplexHistogram(histogramFunction, densityFunc, xLabel="", yLabel="",
     
     #Отмечаем точки
     setTicks(subPlot, allX, xDelta, allY, yDelta, tickFontSize=tickFontSize)
+    
+    showGraphWindow(fullscreenStart)
+
+def renderComplexPolygon(x, y, densityFunc, xLabel="", yLabel="", color="black", width=2, dashColor="black", dashAlpha=0.5, dashWidth=0.7, fullscreenStart=True, tickFontSize=11):
+    #Получаем масштаб и систему координат
+    plotInfo = setupCoordinateSystem(x, y, xLabel=xLabel, yLabel=yLabel)
+    subPlot = plotInfo["subPlot"]
+    xDelta = plotInfo["xScaling"]
+    yDelta = plotInfo["yScaling"]
+    
+    #Строим сам полигон с учетом масштаба
+    xScaled = [ i - xDelta for i in x ]
+    yScaled = [ i - yDelta for i in y ]
+    drawPolygonGraph(xScaled, yScaled, subPlot, color=color, width=width, dashColor=dashColor, dashAlpha=dashAlpha, dashWidth=dashWidth)
+    
+    #Получаем точки для распределения
+    densityX = np.linspace(min(x), max(x), int(max(x) / (minDiffInList(x) / 20)))
+    densityY = [ densityFunc(i) for i in densityX ]
+    
+    #Масштабируем
+    densityX = [ i - xDelta for i in densityX ]
+    densityY = [ i - yDelta for i in densityY ]
+    
+    #Рисуем
+    subPlot.plot(densityX, densityY, color="blue", linewidth=width, zorder=6)
+    
+    setTicks(subPlot, x, xDelta, y, yDelta, tickFontSize=tickFontSize)
     
     showGraphWindow(fullscreenStart)

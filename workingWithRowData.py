@@ -2,7 +2,7 @@ import numpy as np
 from graphingFunctions import roundValue
 from scipy import integrate
 import scipy.stats as stats  
-from math import factorial, exp 
+from math import gamma, exp
 #перечисление рядов (частот, относительныйх частот)
 
 class RowType:
@@ -51,7 +51,8 @@ def getLamda(puasonRow):
     return sum([pair[0] * pair[1] for pair in zip(puasonRow['x'], puasonRow['m'])]) / sum(puasonRow['m'])
 
 def getTheoreticalProbability(lambd, xi):
-    return (lambd ** xi * exp(-lambd)) / factorial(int(xi))
+    #Гамма - это как фактториал, только для float и со смещением на 1
+    return (lambd ** xi * exp(-lambd)) / gamma(float(xi) + 1)
 
 #Разбить на минимальное количество интервалов, чтобы частота каждого интервала была не меньше заданной
 def split_array_into_intervals(arr, min_frequency):

@@ -299,9 +299,7 @@ class MainWindow(QMainWindow):
 
                           
         #Вывод сообщения в консоль
-        print("График частотного полигональной линии успешно построен")
-        
-        
+        print("График частотного полигональной линии успешно построен")        
         
     @Slot()
     def generateRelativeFrequencyPolygon(self):
@@ -317,7 +315,8 @@ class MainWindow(QMainWindow):
         y = [roundValue(i) for i in y]
         
         #Построение графика
-        graph.renderPolygonGraph(x, y, xLabel="Число", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+        graph.renderComplexPolygon(x, y, lambda xi: getTheoreticalProbability(self.lambd, xi), xLabel="Число", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+        # graph.renderPolygonGraph(x, y, xLabel="Число", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
         
         #Вывод сообщения в консоль
         print("График частотной полигональной линии успешно построен")
