@@ -13,6 +13,7 @@ import pyqtgraph as pg
 from mpl_toolkits.axisartist.axislines import SubplotZero
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats as stats    
 
 import graphingFunctions as graph
 from graphingFunctions import roundValue
@@ -75,8 +76,8 @@ class MainWindow(QMainWindow):
         self.ui.openFileBtn_3.clicked.connect(self.openFileBtnClicked_3)
         self.ui.frequencyHistogramBtn_3.clicked.connect(self.frequencyHistogram2)
         self.ui.relativeFrequencyHistogramBtn_3.clicked.connect(self.relativeFrequencyHistogram2)
-        self.ui.empiricalIntervalFunctionBtn_3.clicked.connect(lambda x: (graph.drawEmpiricalGraph(self.empiricalIntervalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
-        self.ui.empiricalGroupFunctionBtn_3.clicked.connect(lambda x: (graph.drawEmpiricalGraph(self.empiricalGroupFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
+        self.ui.empiricalIntervalFunctionBtn_3.clicked.connect(lambda x: (graph.renderEmpiricalGraph(self.empiricalIntervalFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
+        self.ui.empiricalGroupFunctionBtn_3.clicked.connect(lambda x: (graph.renderEmpiricalGraph(self.empiricalGroupFunction, xLabel="x", yLabel="F*(x)", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)))
         self.ui.frequencyPolygonBtn_3.clicked.connect(self.frequencyPolygon2)
         self.ui.relativeFrequencyPolygonBtn_3.clicked.connect(self.relativeFrequencyPolygon2)
         
@@ -165,8 +166,19 @@ class MainWindow(QMainWindow):
             #Вывести сигма выборочной
             self.ui.lineSigma_2.setText(str(roundValue(getSigma(array))))
             #Вывести результат aStar для нормального закона распределения
-            aStar = getX(array)
-            self.ui.lineAStar.setText(str(roundValue(getX(array))))
+            self.aStar = roundValue(getX(array))
+            self.ui.lineAStar.setText(str(self.aStar))
+            
+            #Вывести результат sigmaStar для нормального закона распределения
+            self.sigmaStar = roundValue(getSigma(array))
+            self.ui.lineSigmaStar.setText(str(self.sigmaStar))
+            
+            # Плотность нормального закона распределения через лямбда функцию испльзуя библиотеку scipy
+            self.densityFuncPtr = lambda x: stats.norm.pdf(x, self.aStar, self.sigmaStar)
+            
+            # Вывести формулу плотности нормального закона распределения в latex формате с подставленными значениями aStar и sigmaStar
+            self.setLatexForNormalDensity(self.ui.normalLawDensityLatex_2, self.aStar, self.sigmaStar)
+            
             
             
             
@@ -268,7 +280,7 @@ class MainWindow(QMainWindow):
         y = frequencyRow['frequencies']
         
         #Построение графика
-        graph.drawPolygonGraph(x, y, xLabel="Число", yLabel="Частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+        graph.renderPolygonGraph(x, y, xLabel="Число", yLabel="Частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
 
                           
         #Вывод сообщения в консоль
@@ -290,7 +302,7 @@ class MainWindow(QMainWindow):
         y = [roundValue(i) for i in y]
         
         #Построение графика
-        graph.drawPolygonGraph(x, y, xLabel="Число", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+        graph.renderPolygonGraph(x, y, xLabel="Число", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
         
         #Вывод сообщения в консоль
         print("График частотной полигональной линии успешно построен")
@@ -414,7 +426,7 @@ class MainWindow(QMainWindow):
             frequencyHistogram['frequency'].append(roundValue(self.intervalRow['frequency'][i]/intervalLen))
         
         
-        graph.drawHistogramGraph(frequencyHistogram, xLabel="x", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+        graph.renderComplexHistogram(frequencyHistogram, densityFunc=self.densityFuncPtr, xLabel="x", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
 
         
         print("frequencyHistogram: ", frequencyHistogram)  
@@ -437,7 +449,7 @@ class MainWindow(QMainWindow):
             relativeFreaquency = self.intervalRow['frequency'][i] / frequencySum
             relativeIntervalRow['relativeFrequency'].append(roundValue(relativeFreaquency / intervalLen))
         
-        graph.drawHistogramGraph(relativeIntervalRow, xLabel="x", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+        graph.renderComplexHistogram(relativeIntervalRow, densityFunc=self.densityFuncPtr, xLabel="x", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
         
         
         print("relativeFrequencyHistogram2: ", relativeIntervalRow)
@@ -513,7 +525,7 @@ class MainWindow(QMainWindow):
             frequencyPolygon['x'].append(self.groupRow['numbers'][i])
             frequencyPolygon['y'].append(self.groupRow['numerators'][i])
         
-        graph.drawPolygonGraph(frequencyPolygon['x'], frequencyPolygon['y'], xLabel="Число", yLabel="Частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+        graph.renderPolygonGraph(frequencyPolygon['x'], frequencyPolygon['y'], xLabel="Число", yLabel="Частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
 
         
         print("frequencyPolygon2: ", frequencyPolygon)
@@ -532,7 +544,7 @@ class MainWindow(QMainWindow):
             relativeFrequencyPolygon['y'].append(roundValue(self.groupRow['numerators'][i] / self.groupRow['denominator']))
             
             
-        graph.drawPolygonGraph(relativeFrequencyPolygon['x'], relativeFrequencyPolygon['y'], xLabel="Число", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
+        graph.renderPolygonGraph(relativeFrequencyPolygon['x'], relativeFrequencyPolygon['y'], xLabel="Число", yLabel="Относительная частота", color="black", width=1.5, dashColor="black", dashAlpha=0.5, dashWidth=0.7)
 
             
         print("relativeFrequencyPolygon2: ", relativeFrequencyPolygon)
@@ -578,6 +590,19 @@ class MainWindow(QMainWindow):
         
         tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         tableWidget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+    @Slot()
+    def setLatexForNormalDensity(self, widget, aStar, sigmaStar):
+        
+        firstFraction = r"\frac{1}{" + str(sigmaStar) + r"\sqrt{2\pi}}"
+        
+        exponentDegree = r"{-\frac{(x-" + str(aStar) + r")^2}{2 * " + str(sigmaStar) + r"^2}}"
+        
+        exponent = r"e^{" + exponentDegree + r"}"
+        
+        densityFormula = r"$f(x)= " + firstFraction + exponent + r"$"
+      
+        pixmap = mathTex_to_QPixmap_system(densityFormula, 50)
+        widget.setPixmap(pixmap.scaled(widget.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
         
         
 if __name__ == "__main__":
