@@ -130,7 +130,7 @@ def split(arr, maxIntervals):
         
     for i in range(len(arr)):
         for j in range(len(intervals['start'])):
-            if arr[i] >= intervals['start'][j] and arr[i] < intervals['end'][j]:
+            if (arr[i] > intervals['start'][j] and arr[i] <= intervals['end'][j]) or (j == 0 and arr[i] == intervals['start'][j]):
                 intervals['frequency'][j] += 1
                 break
     print(intervals)
