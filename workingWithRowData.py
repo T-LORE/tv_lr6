@@ -1,5 +1,6 @@
 import numpy as np
-
+from graphingFunctions import roundValue
+from scipy import integrate
 #перечисление рядов (частот, относительныйх частот)
 
 class RowType:
@@ -134,7 +135,6 @@ def split(arr, maxIntervals):
                 break
     print(intervals)
     return intervals    
-        
     
     # intervals = split_array_into_intervals(arr, minFrequency)
     # if len(intervals['start']) < maxIntervals:
@@ -143,4 +143,33 @@ def split(arr, maxIntervals):
     #     intervals = min_sum(intervals)
     # return intervals
 
+    
+def simpson_rule(func, start, end, n):
+    h = (end - start) / (2 * n)
+    x = [start + i * h for i in range(2 * n + 1)]
+    y = [func(x[i]) for i in range(2 * n + 1)]
+    integral = (end - start) / (6 * n) * sum([y[i-1] + 4 * y[i] + y[i+1] for i in range(1, 2*n, 2)])
+    return integral
 
+# теоретическиtе вероятности рi попадания значений предполагаемой нормально распределенной случайной величины в соответствующие интервалы значений X
+def getPi(aStar, sigmaStar, intervals):
+    underIntegral = lambda x: np.exp(-(x ** 2) /2)
+    pi = []
+    coef = 1 / (np.sqrt(2 * np.pi))
+    for i in range(len(intervals['start'])):
+        startIntegral = (intervals['start'][i]- aStar) / sigmaStar
+        endIntegral = (intervals['end'][i] - aStar) / sigmaStar   
+        pi.append(roundValue(coef * simpson_rule(underIntegral, startIntegral, endIntegral, 1000)))
+    return pi
+
+def libGetPi(aStar, sigmaStar, intervals):
+    underIntegral = lambda x: np.exp(-(x ** 2) /2)
+    pi = []
+    coef = 1 / (np.sqrt(2 * np.pi))
+    for i in range(len(intervals['start'])):
+        startIntegral = (intervals['start'][i]- aStar) / sigmaStar
+        endIntegral = (intervals['end'][i] - aStar) / sigmaStar   
+        pi.append(roundValue(coef * integrate.fixed_quad(underIntegral, startIntegral, endIntegral, n = 1000)[0]))
+    return pi
+    
+    return 
