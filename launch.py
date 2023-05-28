@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QMessageBox, Q
 from PySide6.QtCore import Slot, Signal, Qt
 from PySide6.QtGui import QIcon, QPixmap
 from qpixmapCreator import mathTex_to_QPixmap, mathTex_to_QPixmap_system
-from workingWithRowData import getVariationRow, getFrequencyRow, RowType, getX, getD, getSigma, getS, split, getLamda, getTheoreticalProbability, gethi2ObservedArray
+from workingWithRowData import getVariationRow, getFrequencyRow, RowType, getX, getD, getSigma, getS, split, getLamda, getTheoreticalProbability, gethi2ObservedArray, libGethi2CriticalArray
 import numpy as np
 import pyqtgraph as pg
 
@@ -174,12 +174,15 @@ class MainWindow(QMainWindow):
                 rowToFill += 1
             
             #Вычислить и записать лямбду
-            k = len(self.puasonRow["m"]) - 2
-            self.ui.lineK.setText(str(k))
+            self.k = len(self.puasonRow["m"]) - 2
+            self.ui.lineK.setText(str(self.k))
         
             #Вычислить и записать X ожидаемое
             xObserved = sum(gethi2ObservedArray(self.puasonRow["m"], pi))
             self.ui.lineXObserved.setText(str(roundValue(xObserved)))
+            
+            #Записать X критическое
+            self.ui.lineXCritical.setText(str(roundValue(libGethi2CriticalArray(self.k, float(self.ui.lineAlpha.text())))))
         
                     
     @Slot()    
