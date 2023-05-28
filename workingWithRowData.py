@@ -1,7 +1,8 @@
 import numpy as np
 from graphingFunctions import roundValue
 from scipy import integrate
-import scipy.stats as stats   
+import scipy.stats as stats  
+from math import factorial, exp 
 #перечисление рядов (частот, относительныйх частот)
 
 class RowType:
@@ -46,6 +47,14 @@ def getSigma(numbersArray):
 def getS(numbersArray):
     return (1/(len(numbersArray) - 1)) * np.sum(numbersArray )
 
+def getLamda(puasonRow):
+    return sum([pair[0] * pair[1] for pair in zip(puasonRow['x'], puasonRow['m'])]) / sum(puasonRow['m'])
+
+def getTheoreticalProbability(lambd, xi):
+    print(lambd ** xi)
+    print(exp(-lambd))
+    print(factorial(int(xi)))
+    return (lambd ** xi * exp(-lambd)) / factorial(int(xi))
 
 #Разбить на минимальное количество интервалов, чтобы частота каждого интервала была не меньше заданной
 def split_array_into_intervals(arr, min_frequency):
@@ -174,8 +183,7 @@ def libGetPi(aStar, sigmaStar, intervals):
         Fu2 = coef * integrate.fixed_quad(underIntegral, 0, u2, n = 2)[0]
         pi.append(round(Fu2 - Fu1, 5))
     return pi
-    
-   
+       
 def gethi2ObservedArray(frequency, p):
     hi2Observed = []
     for i in range(len(p)):
