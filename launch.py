@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
         
         #Включить/выключить динамическую генерацию эмпмрических функций
         self.generateDynamicEmpirical = True
-        
+        """
         #Как записывается формула: r"$Твоя формула$"
         #Формула среднего выборочного
         x = mathTex_to_QPixmap(r"$\overline{X_{в}} = \frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", 16)
@@ -61,21 +61,34 @@ class MainWindow(QMainWindow):
         
         # #поменять высоту ячеек в таблице
         # self.ui.rowsTable.verticalHeader().setDefaultSectionSize(40)
+        """
         
+        lambdaPixmap = mathTex_to_QPixmap(r"$\lambda^{*} = \frac{1}{n} \sum_{i = 0}^{n}x_{i}$", 16)
+        self.ui.formulaLambda.setPixmap(lambdaPixmap)
+        
+        xObservedPixmap = mathTex_to_QPixmap(r"$\chi^{2}_{набл} = \frac{1}{n} \sum_{i = 0}^{n} \frac{(m_{i}-np_{i})^{2}}{np_{i}}$", 16)
+        self.ui.formulaXObserved.setPixmap(xObservedPixmap)
+        
+        pPixmap = mathTex_to_QPixmap(r"$P_{i} = P(X=x_{i}) = \frac{\lambda^{x_{i}} \cdot e^{-\lambda}}{x_{i}!}$", 16)
+        self.ui.pFormula.setPixmap(pPixmap)
+        
+        kPixmap = mathTex_to_QPixmap(r"$k = s - 2$", 16)
+        self.ui.formulaK.setPixmap(kPixmap)
         
         # Прописанные коннекты
         # Задание 1
-        self.ui.secondTask.clicked.connect(lambda x: (self.setCurrentMode(1)))
-        self.ui.openFileBtn_2.clicked.connect(self.openFileBtnClicked_2)
+        self.ui.firstTaskBtn.clicked.connect(lambda x: (self.setCurrentMode(0)))
+        self.ui.openFileBtn_1.clicked.connect(self.openFileBtnClicked_1)
+        """
         self.ui.frequencyHistogramBtn_2.clicked.connect(self.frequencyHistogram2)
         self.ui.relativeFrequencyHistogramBtn_2.clicked.connect(self.relativeFrequencyHistogram2)
-       
+        """
         
         #Задание 2
+        self.ui.openFileBtn_2.clicked.connect(self.openFileBtnClicked_2)
+        self.ui.secondTaskBtn.clicked.connect(lambda x: (self.setCurrentMode(1)))
+        self.ui.relativeFrequenciesPolygonBtn.clicked.connect(self.generateRelativeFrequencyPolygon)
         
-        self.ui.openFileBtn.clicked.connect(self.openFileBtnClicked_1)
-        
-        self.ui.thirdTask.clicked.connect(lambda x: (self.setCurrentMode(2)))
         # self.ui.openFileBtn_3.clicked.connect(self.openFileBtnClicked_3)
         # self.ui.frequencyHistogramBtn_3.clicked.connect(self.frequencyHistogram2)
         # self.ui.relativeFrequencyHistogramBtn_3.clicked.connect(self.relativeFrequencyHistogram2)
@@ -104,9 +117,7 @@ class MainWindow(QMainWindow):
         # self.ui.empiricalLatex_1.setPixmap(pixmap)
         
         #------------------------------------------------------
-        self.setCurrentMode(1)
-        
-        self.openFileBtnClicked_1()
+        self.setCurrentMode(0)
         
     @Slot()
     def setCurrentMode(self, newMode: str):
@@ -115,13 +126,13 @@ class MainWindow(QMainWindow):
             self.ui.stackedWidget.setCurrentWidget(self.ui.page_1)
         elif self.mode == 1:
             self.ui.stackedWidget.setCurrentWidget(self.ui.page_2)
-        elif self.mode == 2:
-            self.ui.stackedWidget.setCurrentWidget(self.ui.page_3)
+        # elif self.mode == 2:
+            # self.ui.stackedWidget.setCurrentWidget(self.ui.page_3)
             
         print(f"Changed mode to { newMode }")
       
     @Slot()    
-    def openFileBtnClicked_1(self):
+    def openFileBtnClicked_2(self):
         #Выбор файла с помощью диалогового окна QfileDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Текстовый файл (*.txt)")
         if fileName:
@@ -139,13 +150,15 @@ class MainWindow(QMainWindow):
             
             print(self.puasonRow)
             
+            #Заполнить таблицу групп. ряда
+            self.fillTableWithArray(self.ui.rowsTable_2_1, self.puasonRow["x"], 0)
+            self.fillTableWithArray(self.ui.rowsTable_2_1, self.puasonRow["m"], 1)
+           
+            #Вычислить и записать лямбду
             self.lambd = getLamda(self.puasonRow)
+            self.ui.lineLambda.setText(str(roundValue(self.lambd)))
             
-            print(self.lambd)
-            
-            # print(getTheoreticalProbability(self.lambd, ))
-            
-            # print([getTheoreticalProbability(self.lambd, i) for i in self.puasonRow["x"]])
+            #Вычислить значения для известного групп. ряда
             n = sum(self.puasonRow["m"])
             pi = [getTheoreticalProbability(self.lambd, i ) for i in self.puasonRow["x"]]
             npi = [n * i for i in pi]
@@ -153,36 +166,24 @@ class MainWindow(QMainWindow):
             complex2 = [ pair[0] / (n * pair[1]) for pair in zip(complex1, pi)]
             
             tableData = { "xi" : self.puasonRow["x"], "mi" : self.puasonRow["m"],  "pi" : pi, "n*pi" : npi, "(ni - npi)**2" : complex1, "(ni - npi)**2 / npi" : complex2}
-            for key in tableData.keys():
-                print(f"{key}: {tableData[key]}")
             
+            #Заполнить таблицу с вычисленными данными
+            rowToFill = int(0)
+            for key, array in tableData.items():
+                self.fillTableWithArray(self.ui.rowsTable_2_2, [ graph.roundValue(i) for i in array], rowToFill)
+                rowToFill += 1
+            
+            #Вычислить и записать лямбду
             k = len(self.puasonRow["m"]) - 2
-            
-            print(f"k = {k}")
+            self.ui.lineK.setText(str(k))
         
-            print(sum(gethi2ObservedArray(self.puasonRow["m"], pi)))
-            # #Очистить таблицу
-            # self.ui.rowsTable.clearContents()
-            # #Вывести вариационный ряд
-            # self.showVariationRow()
-            # #Вывести статистический ряд частот
-            # self.showFrequencyRows()
-            # #Вывести D выборочное
-            # self.ui.lineD.setText(str(roundValue(getD(self.currentArray))))
-            # #Вывести x выборочное
-            # self.ui.lineX.setText(str(roundValue(getX(self.currentArray))))
-            # #Вывести сигма выборочное
-            # self.ui.lineSigma.setText(str(roundValue(getSigma(self.currentArray))))
-            # #Вывести результат S
-            # self.ui.lineS.setText(str(roundValue(getS(self.currentArray))))  
-            # #Посчитать эмпирическую функцию
-            # self.empiricalFunction = self.generateEmpiricalFunction()
-            # #вывести эмпирическую функцию если включена настройка
-            # if self.generateDynamicEmpirical:
-            #     self.setEmpirical(self.ui.empiricalLatex_1, self.empiricalFunction)
+            #Вычислить и записать X ожидаемое
+            xObserved = sum(gethi2ObservedArray(self.puasonRow["m"], pi))
+            self.ui.lineXObserved.setText(str(roundValue(xObserved)))
+        
                     
     @Slot()    
-    def openFileBtnClicked_2(self):
+    def openFileBtnClicked_1(self):
         #Выбор файла с помощью диалогового окна QfileDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Текстовый файл (*.txt)")
         if fileName:
@@ -243,59 +244,7 @@ class MainWindow(QMainWindow):
             self.densityFuncPtr = lambda x: stats.norm.pdf(x, self.aStar, self.sigmaStar)
             
             # Вывести формулу плотности нормального закона распределения в latex формате с подставленными значениями aStar и sigmaStar
-            self.setLatexForNormalDensity(self.ui.normalLawDensityLatex_2, self.aStar, self.sigmaStar)
-            
-            
-            
-            
-    @Slot()    
-    def openFileBtnClicked_3(self):
-        #Выбор файла с помощью диалогового окна QfileDialog
-        fileName, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Текстовый файл (*.txt)")
-        if fileName:
-            #Открытие файла
-            file = open(fileName, 'r')
-            
-            #Чтение интервалов и их n из файла
-            self.intervalRow = np.genfromtxt(fileName, delimiter=',', names=True)
-            
-            #Закрытие файла
-            file.close()
-            
-            #Вывести интервальный ряд
-            self.showIntervalRow(self.ui.intervalRow3)
-            
-            #Вывести группированный ряд
-            self.showGroupRow(self.ui.groupRow3)
-            
-            #Вывод сообщения в консоль
-            print("Файл успешно открыт")
-            
-                                  
-            
-
-            #Создать массив группированного ряда  
-            array = np.repeat(self.groupRow['numbers'], self.groupRow['numerators'])
-            
-            #Вывести D выборочное
-            self.ui.lineD_3.setText(str(roundValue(getD(array))))
-            #Вывести x выборочное
-            self.ui.lineX_3.setText(str(roundValue(getX(array))))
-            #Вывести сигма выборочной
-            self.ui.lineSigma_3.setText(str(roundValue(getSigma(array))))
-            #Вывести результат S
-            self.ui.lineS_3.setText(str(roundValue(getS(array))))
-            #Посчитать эмпирическую функцию
-            self.empiricalIntervalFunction = self.empiricalIntervalFunction2()
-            #Вывести эмпирическую функцию
-            if self.generateDynamicEmpirical:
-                self.setEmpirical(self.ui.empiricalIntervalLatex_3, self.empiricalIntervalFunction)
-            #Посчитать эмипирическую функцию для группированного ряда
-            self.empiricalGroupFunction = self.empiricalGroupFunction2()
-            #Вывести эмпирическую функцию для группированного ряда
-            if self.generateDynamicEmpirical:
-                self.setEmpirical(self.ui.empiricalGroupLatex_3, self.empiricalGroupFunction)
-            
+            self.setLatexForNormalDensity(self.ui.normalLawDensityLatex_2, self.aStar, self.sigmaStar) 
     
     @Slot()
     def showVariationRow(self):
@@ -360,8 +309,8 @@ class MainWindow(QMainWindow):
         relativeFrequencyRow = getFrequencyRow(self.currentArray, RowType.RELATIVE_FREQUENCY)
         
         #Рассчёт данных для графика
-        x = relativeFrequencyRow['numbers']
-        y = relativeFrequencyRow['numerators']/relativeFrequencyRow['denominator']
+        x = self.puasonRow["x"]
+        y = self.puasonRow["m"] / sum(self.puasonRow["m"])
         
         #Округление
         x = [roundValue(i) for i in x]

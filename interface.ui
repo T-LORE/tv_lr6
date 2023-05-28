@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1151</width>
-    <height>803</height>
+    <height>830</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -175,7 +175,7 @@ QHeaderView::section {
     <item row="0" column="1">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page_2">
        <layout class="QGridLayout" name="gridLayout_2">
@@ -195,7 +195,7 @@ QHeaderView::section {
            </widget>
           </item>
           <item>
-           <widget class="QTableWidget" name="rowsTable">
+           <widget class="QTableWidget" name="rowsTable_2_1">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -421,7 +421,7 @@ QHeaderView::section {
         <item row="1" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
-           <widget class="QPushButton" name="openFileBtn">
+           <widget class="QPushButton" name="openFileBtn_2">
             <property name="text">
              <string>Открыть файл</string>
             </property>
@@ -565,7 +565,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
            </widget>
           </item>
           <item>
-           <widget class="QTableWidget" name="tableResults_3">
+           <widget class="QTableWidget" name="rowsTable_2_2">
             <property name="verticalScrollBarPolicy">
              <enum>Qt::ScrollBarAlwaysOff</enum>
             </property>
@@ -575,9 +575,18 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <property name="sizeAdjustPolicy">
              <enum>QAbstractScrollArea::AdjustToContents</enum>
             </property>
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
             <property name="selectionMode">
              <enum>QAbstractItemView::SingleSelection</enum>
             </property>
+            <property name="cornerButtonEnabled">
+             <bool>false</bool>
+            </property>
+            <attribute name="horizontalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
             <row>
              <property name="text">
               <string>x(i)</string>
@@ -927,7 +936,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
                  </widget>
                 </item>
                 <item>
-                 <widget class="QTableWidget" name="rowsTable_3">
+                 <widget class="QTableWidget" name="rowsTable_1_1">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                     <horstretch>0</horstretch>
@@ -1032,7 +1041,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
                </widget>
               </item>
               <item>
-               <widget class="QTableWidget" name="rowsTable_4">
+               <widget class="QTableWidget" name="rowsTable_1_2">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                   <horstretch>0</horstretch>
@@ -1352,7 +1361,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
            </layout>
           </item>
           <item>
-           <widget class="QPushButton" name="openFileBtn_3">
+           <widget class="QPushButton" name="openFileBtn_1">
             <property name="text">
              <string>Открыть файл</string>
             </property>
