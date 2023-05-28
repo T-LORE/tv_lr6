@@ -51,9 +51,6 @@ def getLamda(puasonRow):
     return sum([pair[0] * pair[1] for pair in zip(puasonRow['x'], puasonRow['m'])]) / sum(puasonRow['m'])
 
 def getTheoreticalProbability(lambd, xi):
-    print(lambd ** xi)
-    print(exp(-lambd))
-    print(factorial(int(xi)))
     return (lambd ** xi * exp(-lambd)) / factorial(int(xi))
 
 #Разбить на минимальное количество интервалов, чтобы частота каждого интервала была не меньше заданной
