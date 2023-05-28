@@ -144,7 +144,7 @@ def split(arr, maxIntervals):
     # return intervals
 
     
-def simpson_rule(func, start, end, n):
+def simpsonRule(func, start, end, n):
     h = (end - start) / (2 * n)
     x = [start + i * h for i in range(2 * n + 1)]
     y = [func(x[i]) for i in range(2 * n + 1)]
@@ -159,17 +159,25 @@ def getPi(aStar, sigmaStar, intervals):
     for i in range(len(intervals['start'])):
         startIntegral = (intervals['start'][i]- aStar) / sigmaStar
         endIntegral = (intervals['end'][i] - aStar) / sigmaStar   
-        pi.append(roundValue(coef * simpson_rule(underIntegral, startIntegral, endIntegral, 1000)))
+        pi.append(roundValue(coef * simpsonRule(underIntegral, startIntegral, endIntegral, 5)))
     return pi
 
 def libGetPi(aStar, sigmaStar, intervals):
-    underIntegral = lambda x: np.exp(-(x ** 2) /2)
+    underIntegral = lambda t: np.exp(-(t ** 2) /2)
     pi = []
     coef = 1 / (np.sqrt(2 * np.pi))
     for i in range(len(intervals['start'])):
-        startIntegral = (intervals['start'][i]- aStar) / sigmaStar
-        endIntegral = (intervals['end'][i] - aStar) / sigmaStar   
-        pi.append(roundValue(coef * integrate.fixed_quad(underIntegral, startIntegral, endIntegral, n = 1000)[0]))
+        u1 = (intervals['start'][i]- aStar) / sigmaStar
+        u2  = (intervals['end'][i] - aStar) / sigmaStar
+        Fu1 = coef * integrate.fixed_quad(underIntegral, 0, u1, n = 2)[0]
+        Fu2 = coef * integrate.fixed_quad(underIntegral, 0, u2, n = 2)[0]
+        pi.append(round(Fu2 - Fu1, 5))
     return pi
     
-    return 
+   
+def gethi2ObservedArray(frequency, p):
+    hi2Observed = []
+    for i in range(len(p)):
+        hi2Observed.append(((frequency[i] - p[i] * sum(frequency)) ** 2) / (p[i] * sum(frequency)))
+    return hi2Observed
+
