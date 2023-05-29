@@ -63,11 +63,14 @@ class MainWindow(QMainWindow):
         # self.ui.rowsTable.verticalHeader().setDefaultSectionSize(40)
         """
         
-        lambdaPixmap = mathTex_to_QPixmap(r"$\lambda^{*} = \frac{1}{n} \sum_{i = 0}^{n}x_{i}$", 16)
+        lambdaPixmap = mathTex_to_QPixmap(r"$\lambda^{*} = \frac{1}{n} \sum_{i = 0}^{n}x_{i}=$", 16)
         self.ui.formulaLambda.setPixmap(lambdaPixmap)
         
-        xObservedPixmap = mathTex_to_QPixmap(r"$\chi^{2}_{набл} = \frac{1}{n} \sum_{i = 0}^{n} \frac{(m_{i}-np_{i})^{2}}{np_{i}}$", 16)
+        xObservedPixmap = mathTex_to_QPixmap(r"$\chi^{2}_{набл} = \frac{1}{n} \sum_{i = 0}^{n} \frac{(m_{i}-np_{i})^{2}}{np_{i}}=$", 16)
         self.ui.formulaXObserved.setPixmap(xObservedPixmap)
+        
+        xCriticalPixmap = mathTex_to_QPixmap(r"$\chi^{2}_{кр} = (k, \alpha)=$", 16)
+        self.ui.formulaXCritical.setPixmap(xCriticalPixmap)
         
         pPixmap = mathTex_to_QPixmap(r"$P_{i} = P(X=x_{i}) = \frac{\lambda^{x_{i}} \cdot e^{-\lambda}}{x_{i}!}$", 16)
         self.ui.pFormula.setPixmap(pPixmap)
@@ -159,6 +162,10 @@ class MainWindow(QMainWindow):
             self.lambd = getLamda(self.puasonRow)
             self.ui.lineLambda.setText(str(roundValue(self.lambd)))
             
+            #Добавить в формулу конкретное значение лямбды 
+            pPixmap = mathTex_to_QPixmap(r"$P_{i} = P(X=x_{i}) = \frac{\lambda^{x_{i}} \cdot e^{-\lambda}}{x_{i}!} =" + r"\frac{" + str(self.lambd) + r"^{x_{i}} \cdot e^{-" + str(self.lambd) + r"}}{x_{i}!}$", 16)
+            self.ui.pFormula.setPixmap(pPixmap)
+            
             #Вычислить значения для известного групп. ряда
             n = sum(self.puasonRow["m"])
             pi = [getTheoreticalProbability(self.lambd, i ) for i in self.puasonRow["x"]]
@@ -183,8 +190,19 @@ class MainWindow(QMainWindow):
             self.ui.lineXObserved.setText(str(roundValue(xObserved)))
             
             #Записать X критическое
-            self.ui.lineXCritical.setText(str(roundValue(libGethi2CriticalArray(self.k, float(self.ui.lineAlpha.text())))))
-        
+            xCritical = libGethi2CriticalArray(self.k, float(self.ui.lineAlpha.text()))
+            self.ui.lineXCritical.setText(str(roundValue(xCritical)))
+            
+            #Записать результат сравнения
+            if xCritical > xObserved:
+                comparasionPixmap = mathTex_to_QPixmap(r"$\chi_{кр}^{2} > \chi_{набл}^{2} \Rightarrow $", 16)
+                outputStr = "Гипотеза согласуется с экспериментальными данными"
+            else:
+                comparasionPixmap = mathTex_to_QPixmap(r"$\chi_{кр}^{2} < \chi_{набл}^{2} \Rightarrow $", 16)
+                outputStr = "Гипотеза не согласуется с экспериментальными данными"
+            self.ui.formulaXComparasion.setPixmap(comparasionPixmap)
+            self.ui.lineCompare_2.setText(outputStr)
+            
                     
     @Slot()    
     def openFileBtnClicked_1(self):
