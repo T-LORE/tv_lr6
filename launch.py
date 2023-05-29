@@ -244,7 +244,11 @@ class MainWindow(QMainWindow):
                 #Создать массив группированного ряда  
                 array = np.repeat(self.groupRow['numbers'], self.groupRow['numerators'])
             
-            self.showIntervalRow(self.ui.rowsTable_1_1)
+            
+            
+            
+            
+
                   
             #Массив заполнения таблицы:
             tableContent = []
@@ -271,7 +275,7 @@ class MainWindow(QMainWindow):
             
             # теоретические вероятности
             pi = getPi(aStar, sigmaStar, self.intervalRow)
-            self.fillTableWithArray(self.ui.rowsTable_1_1, pi, 3)
+            
             
             #Уровень значимости
             a = float(self.ui.lineAlpha_5.text())
@@ -288,7 +292,7 @@ class MainWindow(QMainWindow):
             tableContent.append(hi2Critical)
 
             #Вывод результатов в таблицу
-            self.fillTableWithArray(self.ui.tableResults_5, tableContent, 2)
+            self.fillTableWithArray(self.ui.tableResults_5, tableContent, 2, ignoreVertical = True)
             
             #Записать результат сравнения
             if hi2Critical > hi2Observed:
@@ -298,6 +302,30 @@ class MainWindow(QMainWindow):
                 comparasionPixmap = mathTex_to_QPixmap(r"$\chi_{кр}^{2} < \chi_{набл}^{2} \Rightarrow $", 16)
                 outputStr = "Гипотеза не согласуется с экспериментальными данными"
                 
+            intervalsStr = [f"[{intr[0]},{intr[1]}]" for intr in zip(self.intervalRow["start"], self.intervalRow["end"])]
+            ni = self.intervalRow["frequency"][:]
+            #naturalFraction = mathTex_to_QPixmap(r"$\frac{" + str(numerator) + "}{" + str(denominator) + "}$", 15)
+            sumFreq = sum(self.intervalRow["frequency"])
+            wi = [mathTex_to_QPixmap(r"$\frac{" + str(i) + "}{" + str(sumFreq) + "}$", 15) for i in self.intervalRow["frequency"]]
+            
+            tableData = {
+                "[x(i), x(i+1)]": intervalsStr,
+                "n(i)": ni,
+                "w(i)": wi,
+                "p(i)": pi
+            }
+            
+            latexHeaderData = {
+                "[x(i), x(i+1)]": r"$[x_{i}, x_{i+1}]$",
+                "n(i)": r"$n_{i}$",
+                "w(i)": r"$w_{i}$",
+                "p(i)": r"$p_{i}$"
+            }
+            rowIndex = int(0)
+            for key, value in tableData.items():
+                headerPixmap = mathTex_to_QPixmap(latexHeaderData[key], 20) 
+                self.fillTableWithArray(self.ui.rowsTable_1_1, [headerPixmap] + [i for i in value], rowIndex, stretchVertical = False)
+                rowIndex += 1
             #Вывести результат сравнения
             self.ui.formulaXComparasion_1.setPixmap(comparasionPixmap)
             self.ui.lineCompare_1.setText(outputStr)
@@ -365,8 +393,8 @@ class MainWindow(QMainWindow):
         tableFormulas.append(formulaHi2Critical)
         
         #Вывод в таблицу
-        self.fillTableWithArray(self.ui.tableResults_5, tableHeaders, 0)
-        self.fillTableWithArray(self.ui.tableResults_5, tableFormulas, 1)
+        self.fillTableWithArray(self.ui.tableResults_5, tableHeaders, 0, ignoreVertical = True)
+        self.fillTableWithArray(self.ui.tableResults_5, tableFormulas, 1, ignoreVertical = True)
         
         
         #Ресайз таблицы
@@ -714,7 +742,7 @@ class MainWindow(QMainWindow):
         #widget.setPixmap(pixmap) 
         
     @Slot()
-    def fillTableWithArray(self,tableWidget : QTableWidget, array, row, stretchVertical = True, stretchHorizontal = True):
+    def fillTableWithArray(self,tableWidget : QTableWidget, array, row, stretchVertical = True, stretchHorizontal = True, ignoreVertical = False):
         
         if tableWidget.rowCount() < row + 1:
             tableWidget.setRowCount(row + 1)
@@ -744,7 +772,8 @@ class MainWindow(QMainWindow):
         else:
             verticalMode = QHeaderView.ResizeMode.ResizeToContents
         
-        tableWidget.verticalHeader().setSectionResizeMode(verticalMode)
+        if not ignoreVertical:
+            tableWidget.verticalHeader().setSectionResizeMode(verticalMode)
         
         
 
