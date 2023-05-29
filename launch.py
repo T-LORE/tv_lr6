@@ -75,7 +75,7 @@ class MainWindow(QMainWindow):
         pPixmap = mathTex_to_QPixmap(r"$P_{i} = P(X=x_{i}) = \frac{\lambda^{x_{i}} \cdot e^{-\lambda}}{x_{i}!}$", 16)
         self.ui.pFormula.setPixmap(pPixmap)
         
-        kPixmap = mathTex_to_QPixmap(r"$k = s - 2$", 16)
+        kPixmap = mathTex_to_QPixmap(r"$k = s - 2 =$", 16)
         self.ui.formulaK.setPixmap(kPixmap)
         
         # Прописанные коннекты
@@ -129,6 +129,9 @@ class MainWindow(QMainWindow):
             
             #Чтение интервалов и их n из файла
             self.puasonRow = np.genfromtxt(fileName, delimiter=',', names=True)
+           
+            #Записать содержимое файла
+            self.ui.fileBuffer_2.setText(file.read())
            
             #Закрытие файла
             file.close()
