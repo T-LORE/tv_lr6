@@ -318,6 +318,13 @@ def renderComplexHistogram(histogramFunction, densityFunc, xLabel="", yLabel="",
     #Отмечаем точки
     setTicks(subPlot, allX, xDelta, allY, yDelta, tickFontSize=tickFontSize)
     
+    #Подписать графики
+    subPlot.plot(0, 0, ls="--", color="black", label="Плотность нормального распределения")
+    subPlot.plot(0, 0, ls=":", color="black", label="Середины горизонтальных отрезков гистограммы")
+    subPlot.plot(0, 0, color="black", label="Гистограмма относительной вероятности")
+    subPlot.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    
+    
     showGraphWindow(fullscreenStart)
 
 def renderComplexPolygon(x, y, densityFunc, xLabel="", yLabel="", color="black", width=2, dashColor="black", dashAlpha=0.5, dashWidth=0.7, fullscreenStart=True, tickFontSize=11):
@@ -344,5 +351,10 @@ def renderComplexPolygon(x, y, densityFunc, xLabel="", yLabel="", color="black",
     subPlot.plot(densityX, densityY, color=color, ls="--", linewidth=width, zorder=6)
     
     setTicks(subPlot, x, xDelta, y, yDelta, tickFontSize=tickFontSize)
+    
+    #Подписать графики
+    subPlot.plot(0, 0, ls="--", color="black", label="Плотность нормального распределения")
+    subPlot.plot(0, 0, color="black", label="Полигон относительной вероятности")
+    subPlot.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
     
     showGraphWindow(fullscreenStart)
