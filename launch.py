@@ -213,7 +213,7 @@ class MainWindow(QMainWindow):
                 file.close()
                 
                 #Вывод массива чисел в виджет через запятую
-                self.ui.fileBuffer_3.setText(np.array2string(array, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[','').replace(']', ''))                      
+                self.ui.fileBuffer_3.setText(np.array2string(array, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[','').replace(']', '').replace('\n', ''))                      
                 #Получить кол-во интервалов от пользователя
                 try:
                     self.intervalCount = int(self.ui.lineIntervalCount.text())
@@ -228,6 +228,8 @@ class MainWindow(QMainWindow):
                 #Интервальный
                 file = open(fileName, 'r')
                 self.intervalRow = np.genfromtxt(fileName, delimiter=',', names=True)
+                #вывести содержимое файла 
+                self.ui.fileBuffer_3.setText(file.read())
                 #Округлить интервалы
                 self.intervalRow["start"] = [roundValue(i) for i in self.intervalRow["start"]]
                 self.intervalRow["end"] = [roundValue(i) for i in self.intervalRow["end"]]
@@ -243,13 +245,7 @@ class MainWindow(QMainWindow):
                     
                 #Создать массив группированного ряда  
                 array = np.repeat(self.groupRow['numbers'], self.groupRow['numerators'])
-            
-            
-            
-            
-            
-
-                  
+             
             #Массив заполнения таблицы:
             tableContent = []
                    
