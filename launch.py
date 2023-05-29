@@ -152,11 +152,19 @@ class MainWindow(QMainWindow):
             #Вывод сообщения в консоль
             print("Файл успешно открыт")
             
-            print(self.puasonRow)
+            latexStrs = { "xi" : r"$x_{i}$",  
+                         "ni" : r"$n_{i}$", 
+                         "mi" : r"$m_{i}$", 
+                         "pi" : r"$p_{i}$",
+                         "n*pi" : r"$n \cdot p_{i}$", 
+                         "(ni - npi)**2" : r"$(n_{i} - np_{i})^{2}$", 
+                         "(ni - npi)**2 / npi" : r"$\frac{(n_{i} - np_{i})^{2}}{np_{i}}$"}
             
             #Заполнить таблицу групп. ряда
-            self.fillTableWithArray(self.ui.rowsTable_2_1, self.puasonRow["x"], 0)
-            self.fillTableWithArray(self.ui.rowsTable_2_1, self.puasonRow["m"], 1)
+            pix1 = mathTex_to_QPixmap(latexStrs["xi"], 16)
+            self.fillTableWithArray(self.ui.rowsTable_2_1, [pix1] + [ i for i in self.puasonRow["x"] ], 0)
+            pix2 = mathTex_to_QPixmap(latexStrs["ni"], 16)
+            self.fillTableWithArray(self.ui.rowsTable_2_1, [pix2] + [ i for i in self.puasonRow["m"] ], 1)
            
             #Вычислить и записать лямбду
             self.lambd = getLamda(self.puasonRow)
@@ -178,7 +186,8 @@ class MainWindow(QMainWindow):
             #Заполнить таблицу с вычисленными данными
             rowToFill = int(0)
             for key, array in tableData.items():
-                self.fillTableWithArray(self.ui.rowsTable_2_2, [ graph.roundValue(i) for i in array], rowToFill)
+                headerPixmap = mathTex_to_QPixmap(latexStrs[key], 16)
+                self.fillTableWithArray(self.ui.rowsTable_2_2, [headerPixmap] + [ graph.roundValue(i) for i in array], rowToFill, stretchVertical=False)
                 rowToFill += 1
             
             #Вычислить и записать лямбду
@@ -711,25 +720,41 @@ class MainWindow(QMainWindow):
         #widget.setPixmap(pixmap) 
         
     @Slot()
-    def fillTableWithArray(self,tableWidget : QTableWidget, array, row):
+    def fillTableWithArray(self,tableWidget : QTableWidget, array, row, stretchVertical = True, stretchHorizontal = True):
         
         if tableWidget.rowCount() < row + 1:
             tableWidget.setRowCount(row + 1)
         if tableWidget.columnCount() < len(array):
             tableWidget.setColumnCount(len(array))
-           
-        if type(array[0]) == QPixmap:
-            for i in range(len(array)):
-                newItem = QTableWidgetItem("")
-                newItem.setData(Qt.DecorationRole, array[i])
-                tableWidget.setItem(row, i, newItem)
-        else:
-             for i in range(len(array)):
-                tableWidget.setItem(row, i, QTableWidgetItem(str(array[i])))
-            
+          
+        overrideHeight = {}  
         
-        tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        tableWidget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        for i, elem in enumerate(array):
+            if type(elem) == QPixmap:
+                newItem = QTableWidgetItem("")
+                newItem.setData(Qt.DecorationRole, elem)
+                tableWidget.setItem(row, i, newItem)
+                overrideHeight[i] = elem.height()
+            else:
+                tableWidget.setItem(row, i, QTableWidgetItem(str(elem)))
+                
+        if stretchHorizontal:
+            horizontalMode = QHeaderView.ResizeMode.Stretch
+        else:
+            horizontalMode = QHeaderView.ResizeMode.ResizeToContents
+                
+        tableWidget.horizontalHeader().setSectionResizeMode(horizontalMode)
+        
+        if stretchVertical:
+            verticalMode = QHeaderView.ResizeMode.Stretch
+        else:
+            verticalMode = QHeaderView.ResizeMode.ResizeToContents
+        
+        tableWidget.verticalHeader().setSectionResizeMode(verticalMode)
+        
+        
+
+        
     @Slot()
     def setLatexForNormalDensity(self, widget, aStar, sigmaStar):
         
