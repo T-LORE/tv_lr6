@@ -296,11 +296,14 @@ class MainWindow(QMainWindow):
   
             self.fillTableWithArray(self.ui.rowsTable_1_1, pi, 3)
             
-            #Хи квадрат наблюдаемое
+            #Уровень значимости
             a = float(self.ui.lineAlpha_5.text())
             #Число степеней свободы
             k  = len(self.intervalRow['start'])-3
-            self.ui.lineK_5.setText(str(k))
+            kFormula = mathTex_to_QPixmap(r"$k$", fontSize)
+            tableHeaders.append(kFormula)
+            tableContent.append(k)
+            
             
             hi2Observed = roundValue(sum(gethi2ObservedArray(self.intervalRow['frequency'], pi)))
             formulaHi2Observed = mathTex_to_QPixmap(r"$\chi^{2}_{набл}$", fontSize)
@@ -323,48 +326,35 @@ class MainWindow(QMainWindow):
                 outputStr = "Гипотеза не согласуется с эксперементальными данными"
             
             self.ui.lineCompare_1.setText(outputStr)
-            formulaFontSize = 10
+            
             #Формулы 
+            formulaFontSize = 18
             formulasArray = []
-            x = mathTex_to_QPixmap(r"$\overline{X_{в}} = \frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", formulaFontSize)
+            x = mathTex_to_QPixmap(r"$\frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", formulaFontSize)
             formulasArray.append(x)
             #Формула выборочной дисперсии
-            d = mathTex_to_QPixmap(r"$D_{в} = X^{2} - (\overline{X_{в}})^{2}$", formulaFontSize)
+            d = mathTex_to_QPixmap(r"$X^{2} - (\overline{X_{в}})^{2}$", formulaFontSize)
             formulasArray.append(d)
             #Формула выборочного среднего квадратического отклонения
-            sigma = mathTex_to_QPixmap(r"$\sigma_{в} = \sqrt{D_{в}}$", formulaFontSize)
+            sigma = mathTex_to_QPixmap(r"$\sqrt{D_{в}}$", formulaFontSize)
             formulasArray.append(sigma)
             
             #Формула A* (x выборочное)
-            pixmapAStar = mathTex_to_QPixmap(r"$a^{*} = \frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", formulaFontSize)
+            pixmapAStar = mathTex_to_QPixmap(r"$\frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", formulaFontSize)
             formulasArray.append(pixmapAStar)
             #Формула сигма* (обычная сигма)
-            pixmapSigmaStar = mathTex_to_QPixmap(r"$\sigma^{*} = \sqrt{D_{в}}$", formulaFontSize)
+            pixmapSigmaStar = mathTex_to_QPixmap(r"$\sqrt{D_{в}}$", formulaFontSize)
             formulasArray.append(pixmapSigmaStar)
             
+            #Формула степеней свободы k - число интервалов - число параметров -1
+            pixmapK = mathTex_to_QPixmap(r"$m - r - 1$", formulaFontSize)
+            formulasArray.append(pixmapK)
+            
             #Формула хи квадрат наблюдаемое
-            pixmapHi2Observed = mathTex_to_QPixmap(r"$\chi^{2}_{набл} = \sum_{i=1}^{k} \frac{(m_{i} - np_{i})^{2}}{np_{i}}$", formulaFontSize)
+            pixmapHi2Observed = mathTex_to_QPixmap(r"$\sum_{i=1}^{k} \frac{(m_{i} - np_{i})^{2}}{np_{i}}$", formulaFontSize-1)
             formulasArray.append(pixmapHi2Observed)
             
             self.fillTableWithArray(self.ui.tableResults_5, formulasArray, 2)
-            
-            
-
-
-                
-            # #Вывести D выборочное
-            # self.ui.lineD_2.setText(str(roundValue(getD(array))))
-            # #Вывести x выборочное
-            # self.ui.lineX_2.setText(str(roundValue(getX(array))))
-            # #Вывести сигма выборочной
-            # self.ui.lineSigma_2.setText(str(roundValue(getSigma(array))))
-            # #Вывести результат aStar для нормального закона распределения
-            # self.aStar = roundValue(getX(array))
-            # self.ui.lineAStar.setText(str(self.aStar))
-            
-            # #Вывести результат sigmaStar для нормального закона распределения
-            # self.sigmaStar = roundValue(getSigma(array))
-            # self.ui.lineSigmaStar.setText(str(self.sigmaStar))
                 
             # Плотность нормального закона распределения через лямбда функцию испльзуя библиотеку scipy
             self.densityFuncPtr = lambda x: stats.norm.pdf(x, aStar, sigmaStar)
@@ -729,7 +719,7 @@ class MainWindow(QMainWindow):
             
         
         tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        tableWidget.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        
     @Slot()
     def setLatexForNormalDensity(self, widget, aStar, sigmaStar):
         
