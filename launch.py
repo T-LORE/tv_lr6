@@ -101,28 +101,12 @@ class MainWindow(QMainWindow):
         # self.ui.frequencyPolygonBtn_3.clicked.connect(self.frequencyPolygon2)
         # self.ui.relativeFrequencyPolygonBtn_3.clicked.connect(self.relativeFrequencyPolygon2)
         
-        #------------------------------------------------------
-        #Тест вставки эмпирической функции
-        # testEmpirical = {
-        #     'start': [4.25, 4.45, 4.55, 4.65, 4.85], 
-        #     'end': [4.45, 4.55, 4.65, 4.85, 4.949999999999999], 
-        #     'y': [0.27, 0.49, 0.72, 0.82, 1]}
+        #Открытие на полный экран
+        self.showMaximized()
         
-        # #Создать строчку Latex из библиотеки matplotLib, в которой будет система эмпирическоф функции по шаблону: F(x) = {[start[i], end[i]]: y[i]}
-        # latexStr = r"$F(x)= \begin{cases} "
-        # for i in range(len(testEmpirical['start'])):
-        #     latexStr += str(testEmpirical['y'][i])
-        #     latexStr += r" & \text{при } x \in [" + str(testEmpirical['start'][i]) + r", " + str(testEmpirical['end'][i]) + r"]"
-        #     if i != len(testEmpirical['start']) - 1:
-        #         latexStr += r" \\ "
-        # latexStr += r" \end{cases}$"
-        
-        # pixmap = mathTex_to_QPixmap_system(latexStr, 20)
-        # self.ui.empiricalLatex_1.setPixmap(pixmap)
-        
-        #------------------------------------------------------
+        self.prepareForFirstTask()
         self.setCurrentMode(0)
-        
+         
     @Slot()
     def setCurrentMode(self, newMode: str):
         self.mode = newMode
@@ -248,120 +232,140 @@ class MainWindow(QMainWindow):
                     self.groupRow['numbers'].append((self.intervalRow['start'][i] + self.intervalRow['end'][i]) / 2)
                     self.groupRow['numerators'].append(self.intervalRow['frequency'][i])
                     
-                    #Создать массив группированного ряда  
+                #Создать массив группированного ряда  
                 array = np.repeat(self.groupRow['numbers'], self.groupRow['numerators'])
             
             self.showIntervalRow(self.ui.rowsTable_1_1)
-            
-            
-            
+                  
             #Массив заполнения таблицы:
-            tableHeaders = []
             tableContent = []
-            fontSize = 14         
+                   
             #X выборочное
             x = roundValue(getX(array))
-            formulaX = mathTex_to_QPixmap(r"$x_{в}$", fontSize)
-            tableHeaders.append(formulaX)
             tableContent.append(x)
             
             # D выборочное
             d = roundValue(getD(array))
-            formulaD = mathTex_to_QPixmap(r"$D_{в}$", fontSize)
-            tableHeaders.append(formulaD)
             tableContent.append(d)
             
             # Сигма выборочная
             sigma = roundValue(getSigma(array))
-            formulaSigma = mathTex_to_QPixmap(r"$\sigma_{в}$", fontSize)
-            tableHeaders.append(formulaSigma)
             tableContent.append(sigma)
             
             # aStar
             aStar = roundValue(getX(array))
-            formulaAStar = mathTex_to_QPixmap(r"$a^{*}$", fontSize)
-            tableHeaders.append(formulaAStar)
             tableContent.append(aStar)
             
             # sigmaStar
             sigmaStar = roundValue(getSigma(array))
-            formulaSigmaStar = mathTex_to_QPixmap(r"$\sigma^{*}$", fontSize)
-            tableHeaders.append(formulaSigmaStar)
             tableContent.append(sigmaStar)
             
             # теоретические вероятности
             pi = getPi(aStar, sigmaStar, self.intervalRow)
-            #Вывод в таблицу
-            #Заполнить таблицу теоретических вероятностей
-  
             self.fillTableWithArray(self.ui.rowsTable_1_1, pi, 3)
             
             #Уровень значимости
             a = float(self.ui.lineAlpha_5.text())
             #Число степеней свободы
             k  = len(self.intervalRow['start'])-3
-            kFormula = mathTex_to_QPixmap(r"$k$", fontSize)
-            tableHeaders.append(kFormula)
             tableContent.append(k)
             
-            
+            #Хи квадрат наблюдаемое
             hi2Observed = roundValue(sum(gethi2ObservedArray(self.intervalRow['frequency'], pi)))
-            formulaHi2Observed = mathTex_to_QPixmap(r"$\chi^{2}_{набл}$", fontSize)
-            tableHeaders.append(formulaHi2Observed)
             tableContent.append(hi2Observed)
             
             #Хи квадрат критическое
             hi2Critical = roundValue(libGethi2CriticalArray(k, a))
-            formulaHi2Critical = mathTex_to_QPixmap(r"$\chi^{2}_{кр}$", fontSize)
-            tableHeaders.append(formulaHi2Critical)
             tableContent.append(hi2Critical)
+
+            #Вывод результатов в таблицу
+            self.fillTableWithArray(self.ui.tableResults_5, tableContent, 2)
             
-            #Вывод в таблицу
-            self.fillTableWithArray(self.ui.tableResults_5, tableHeaders, 0)
-            self.fillTableWithArray(self.ui.tableResults_5, tableContent, 1)
-            
-            if hi2Observed < hi2Critical:
-                outputStr = "Гипотеза согласуется с эксперементальными данными"
+            #Записать результат сравнения
+            if hi2Critical > hi2Observed:
+                comparasionPixmap = mathTex_to_QPixmap(r"$\chi_{кр}^{2} > \chi_{набл}^{2} \Rightarrow $", 16)
+                outputStr = "Гипотеза согласуется с экспериментальными данными"
             else:
-                outputStr = "Гипотеза не согласуется с эксперементальными данными"
-            
+                comparasionPixmap = mathTex_to_QPixmap(r"$\chi_{кр}^{2} < \chi_{набл}^{2} \Rightarrow $", 16)
+                outputStr = "Гипотеза не согласуется с экспериментальными данными"
+                
+            #Вывести результат сравнения
+            self.ui.formulaXComparasion_1.setPixmap(comparasionPixmap)
             self.ui.lineCompare_1.setText(outputStr)
             
-            #Формулы 
-            formulaFontSize = 18
-            formulasArray = []
-            x = mathTex_to_QPixmap(r"$\frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", formulaFontSize)
-            formulasArray.append(x)
-            #Формула выборочной дисперсии
-            d = mathTex_to_QPixmap(r"$X^{2} - (\overline{X_{в}})^{2}$", formulaFontSize)
-            formulasArray.append(d)
-            #Формула выборочного среднего квадратического отклонения
-            sigma = mathTex_to_QPixmap(r"$\sqrt{D_{в}}$", formulaFontSize)
-            formulasArray.append(sigma)
-            
-            #Формула A* (x выборочное)
-            pixmapAStar = mathTex_to_QPixmap(r"$\frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", formulaFontSize)
-            formulasArray.append(pixmapAStar)
-            #Формула сигма* (обычная сигма)
-            pixmapSigmaStar = mathTex_to_QPixmap(r"$\sqrt{D_{в}}$", formulaFontSize)
-            formulasArray.append(pixmapSigmaStar)
-            
-            #Формула степеней свободы k - число интервалов - число параметров -1
-            pixmapK = mathTex_to_QPixmap(r"$m - r - 1$", formulaFontSize)
-            formulasArray.append(pixmapK)
-            
-            #Формула хи квадрат наблюдаемое
-            pixmapHi2Observed = mathTex_to_QPixmap(r"$\sum_{i=1}^{k} \frac{(m_{i} - np_{i})^{2}}{np_{i}}$", formulaFontSize-1)
-            formulasArray.append(pixmapHi2Observed)
-            
-            self.fillTableWithArray(self.ui.tableResults_5, formulasArray, 2)
-                
             # Плотность нормального закона распределения через лямбда функцию испльзуя библиотеку scipy
             self.densityFuncPtr = lambda x: stats.norm.pdf(x, aStar, sigmaStar)
                 
             # Вывести формулу плотности нормального закона распределения в latex формате с подставленными значениями aStar и sigmaStar
             self.setLatexForNormalDensity(self.ui.densityFunction, aStar, sigmaStar) 
-    
+    @Slot()
+    def prepareForFirstTask(self):
+        #Массив заполнения таблицы:
+        tableHeaders = []
+        tableFormulas = []
+        
+        formulaFontSize = 22
+        headersFontSize = 20
+
+        #X выборочное
+        x = mathTex_to_QPixmap(r"$x_{в}$", headersFontSize)
+        formulaX = mathTex_to_QPixmap(r"$\frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", formulaFontSize)
+        tableHeaders.append(x)
+        tableFormulas.append(formulaX)
+
+        # D выборочное     
+        d = mathTex_to_QPixmap(r"$D_{в}$", headersFontSize)
+        formulaD = mathTex_to_QPixmap(r"$X^{2} - (\overline{X_{в}})^{2}$", formulaFontSize)
+        tableHeaders.append(d)
+        tableFormulas.append(formulaD)
+        
+        #Сигма выборочное
+        sigma = mathTex_to_QPixmap(r"$\sigma_{в}$", headersFontSize)
+        formulaSigma = mathTex_to_QPixmap(r"$\sqrt{D_{в}}$", formulaFontSize)
+        tableHeaders.append(sigma)
+        tableFormulas.append(formulaSigma)
+        
+        #A* 
+        aStar = mathTex_to_QPixmap(r"$a^{*}$", headersFontSize)
+        formulaAStar = mathTex_to_QPixmap(r"$\frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", formulaFontSize)
+        tableHeaders.append(aStar)
+        tableFormulas.append(formulaAStar)
+        
+        #сигма*
+        sigmaStar = mathTex_to_QPixmap(r"$\sigma^{*}$", headersFontSize)
+        formulaSigmaStar = mathTex_to_QPixmap(r"$\sqrt{D_{в}}$", formulaFontSize)
+        tableHeaders.append(sigmaStar)
+        tableFormulas.append(formulaSigmaStar)
+        
+        #Степени свободы k
+        k = mathTex_to_QPixmap(r"$k$", headersFontSize)
+        formulaK = mathTex_to_QPixmap(r"$m - r - 1$", formulaFontSize)
+        tableHeaders.append(k)
+        tableFormulas.append(formulaK)
+        
+        #Хи квадрат наблюдаемое
+        hi2Observed = mathTex_to_QPixmap(r"$\chi^{2}_{набл}$", headersFontSize)
+        formulaHi2Observed = mathTex_to_QPixmap(r"$\sum_{i=1}^{k} \frac{(m_{i} - np_{i})^{2}}{np_{i}}$", formulaFontSize-1)
+        tableHeaders.append(hi2Observed)
+        tableFormulas.append(formulaHi2Observed)
+        
+        #Хи квадрат критическое
+        hi2Critical = mathTex_to_QPixmap(r"$\chi^{2}_{кр}$", headersFontSize)
+        formulaHi2Critical = mathTex_to_QPixmap(r"$Табличное$", formulaFontSize)
+        tableHeaders.append(hi2Critical)
+        tableFormulas.append(formulaHi2Critical)
+        
+        #Вывод в таблицу
+        self.fillTableWithArray(self.ui.tableResults_5, tableHeaders, 0)
+        self.fillTableWithArray(self.ui.tableResults_5, tableFormulas, 1)
+        
+        
+        #Ресайз таблицы
+        self.ui.tableResults_5.verticalHeader().setSectionResizeMode(self.ui.tableResults_5.rowCount()-1, QHeaderView.ResizeToContents)
+        self.ui.tableResults_5.verticalHeader().setSectionResizeMode(self.ui.tableResults_5.rowCount(), QHeaderView.Stretch)
+        
+
+
     @Slot()
     def showVariationRow(self):
         self.variationRow = getVariationRow(self.currentArray)

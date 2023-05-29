@@ -1260,7 +1260,7 @@ hr { height: 1px; border-width: 0; }
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="label_20">
+           <widget class="QLabel" name="formulaXComparasion_1">
             <property name="text">
              <string>Результат сравнения (X(набл))^2 с (Х(крит))^2</string>
             </property>
