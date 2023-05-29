@@ -354,7 +354,7 @@ def renderComplexPolygon(x, y, densityFunc, xLabel="", yLabel="", color="black",
     
     #Подписать графики
     subPlot.plot(0, 0, ls="--", color="black", label="Многоугольник предполагаемого теоретического распределения")
-    subPlot.plot(0, 0, color="black", label="Полигон относительной вероятности")
+    subPlot.plot(0, 0, color="black", label="Полигон относительных частот")
     subPlot.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
     
     showGraphWindow(fullscreenStart)
