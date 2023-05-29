@@ -172,10 +172,59 @@ QHeaderView::section {
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="firstTaskBtn">
+         <property name="text">
+          <string>Задание 1</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="secondTaskBtn">
+         <property name="text">
+          <string>Задание 2</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item row="0" column="1">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page_2">
        <layout class="QGridLayout" name="gridLayout_2">
@@ -886,106 +935,10 @@ hr { height: 1px; border-width: 0; }
       </widget>
       <widget class="QWidget" name="page_1">
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="8" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_16">
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_42">
-            <item>
-             <widget class="QPushButton" name="distributionDensityBtn">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>График f(x)</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-        <item row="4" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_35">
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <spacer name="horizontalSpacer_72">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="labelK_5">
-            <property name="text">
-             <string>Результат k (число степеней свободы)</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="lineK_5">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>25</height>
-             </size>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="formulaK_5">
-            <property name="text">
-             <string>фотка формулы числа степеней свободы</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_71">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item row="10" column="0">
+        <item row="9" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_19"/>
         </item>
-        <item row="11" column="0">
+        <item row="10" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_43">
           <property name="bottomMargin">
            <number>0</number>
@@ -1006,7 +959,7 @@ hr { height: 1px; border-width: 0; }
           <item>
            <widget class="QLabel" name="label_20">
             <property name="text">
-             <string>Результат сравнения (X(набл))^2 с (Х(крит)^2)</string>
+             <string>Результат сравнения (X(набл))^2 с (Х(крит))^2</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -1015,6 +968,18 @@ hr { height: 1px; border-width: 0; }
           </item>
           <item>
            <widget class="QLineEdit" name="lineCompare_1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>600</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -1024,10 +989,13 @@ hr { height: 1px; border-width: 0; }
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_63">
+           <spacer name="horizontalSpacer_15">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -1041,7 +1009,7 @@ hr { height: 1px; border-width: 0; }
           </item>
          </layout>
         </item>
-        <item row="5" column="0">
+        <item row="4" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_21">
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_31">
@@ -1051,125 +1019,12 @@ hr { height: 1px; border-width: 0; }
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_24">
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_9">
-                <item>
-                 <widget class="QLabel" name="label_7">
-                  <property name="layoutDirection">
-                   <enum>Qt::LeftToRight</enum>
-                  </property>
-                  <property name="text">
-                   <string>Интервальный ряд (частот и относительных частот)</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QTableWidget" name="rowsTable_1_1">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>140</height>
-                   </size>
-                  </property>
-                  <property name="verticalScrollBarPolicy">
-                   <enum>Qt::ScrollBarAlwaysOff</enum>
-                  </property>
-                  <property name="horizontalScrollBarPolicy">
-                   <enum>Qt::ScrollBarAsNeeded</enum>
-                  </property>
-                  <property name="sizeAdjustPolicy">
-                   <enum>QAbstractScrollArea::AdjustToContents</enum>
-                  </property>
-                  <property name="editTriggers">
-                   <set>QAbstractItemView::NoEditTriggers</set>
-                  </property>
-                  <property name="gridStyle">
-                   <enum>Qt::SolidLine</enum>
-                  </property>
-                  <property name="sortingEnabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="wordWrap">
-                   <bool>true</bool>
-                  </property>
-                  <property name="cornerButtonEnabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="rowCount">
-                   <number>4</number>
-                  </property>
-                  <property name="columnCount">
-                   <number>0</number>
-                  </property>
-                  <attribute name="horizontalHeaderVisible">
-                   <bool>false</bool>
-                  </attribute>
-                  <attribute name="horizontalHeaderCascadingSectionResizes">
-                   <bool>false</bool>
-                  </attribute>
-                  <attribute name="horizontalHeaderMinimumSectionSize">
-                   <number>20</number>
-                  </attribute>
-                  <attribute name="horizontalHeaderDefaultSectionSize">
-                   <number>80</number>
-                  </attribute>
-                  <attribute name="horizontalHeaderHighlightSections">
-                   <bool>true</bool>
-                  </attribute>
-                  <attribute name="verticalHeaderVisible">
-                   <bool>true</bool>
-                  </attribute>
-                  <attribute name="verticalHeaderDefaultSectionSize">
-                   <number>50</number>
-                  </attribute>
-                  <attribute name="verticalHeaderStretchLastSection">
-                   <bool>true</bool>
-                  </attribute>
-                  <row>
-                   <property name="text">
-                    <string>x(i);x(i+1)</string>
-                   </property>
-                  </row>
-                  <row>
-                   <property name="text">
-                    <string>n(i)</string>
-                   </property>
-                  </row>
-                  <row>
-                   <property name="text">
-                    <string>W(i)</string>
-                   </property>
-                  </row>
-                  <row>
-                   <property name="text">
-                    <string>c(i)</string>
-                   </property>
-                  </row>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_33">
+               <widget class="QLabel" name="label_7">
                 <property name="layoutDirection">
                  <enum>Qt::LeftToRight</enum>
                 </property>
                 <property name="text">
-                 <string>Полученные теоретические вероятности p(i)</string>
+                 <string>Интервальный ряд (частот и относительных частот)</string>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -1177,7 +1032,7 @@ hr { height: 1px; border-width: 0; }
                </widget>
               </item>
               <item>
-               <widget class="QTableWidget" name="rowsTable_1_2">
+               <widget class="QTableWidget" name="rowsTable_1_1">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                   <horstretch>0</horstretch>
@@ -1193,7 +1048,7 @@ hr { height: 1px; border-width: 0; }
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>140</height>
+                  <height>200</height>
                  </size>
                 </property>
                 <property name="verticalScrollBarPolicy">
@@ -1208,6 +1063,9 @@ hr { height: 1px; border-width: 0; }
                 <property name="editTriggers">
                  <set>QAbstractItemView::NoEditTriggers</set>
                 </property>
+                <property name="selectionMode">
+                 <enum>QAbstractItemView::NoSelection</enum>
+                </property>
                 <property name="gridStyle">
                  <enum>Qt::SolidLine</enum>
                 </property>
@@ -1219,6 +1077,9 @@ hr { height: 1px; border-width: 0; }
                 </property>
                 <property name="cornerButtonEnabled">
                  <bool>false</bool>
+                </property>
+                <property name="rowCount">
+                 <number>4</number>
                 </property>
                 <property name="columnCount">
                  <number>0</number>
@@ -1233,7 +1094,7 @@ hr { height: 1px; border-width: 0; }
                  <number>20</number>
                 </attribute>
                 <attribute name="horizontalHeaderDefaultSectionSize">
-                 <number>50</number>
+                 <number>80</number>
                 </attribute>
                 <attribute name="horizontalHeaderHighlightSections">
                  <bool>true</bool>
@@ -1254,23 +1115,35 @@ hr { height: 1px; border-width: 0; }
                 </row>
                 <row>
                  <property name="text">
+                  <string>n(i)</string>
+                 </property>
+                </row>
+                <row>
+                 <property name="text">
+                  <string>W(i)</string>
+                 </property>
+                </row>
+                <row>
+                 <property name="text">
                   <string>p(i)</string>
                  </property>
                 </row>
                </widget>
               </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_36">
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
               <item>
-               <widget class="QLabel" name="label_23">
+               <widget class="QLabel" name="densityFunction">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>75</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string>формула плотности нормального закона распределения с найденными a* и сигма*</string>
                 </property>
@@ -1285,20 +1158,7 @@ hr { height: 1px; border-width: 0; }
           </item>
          </layout>
         </item>
-        <item row="0" column="0">
-         <spacer name="verticalSpacer_6">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="3" column="0">
+        <item row="2" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_43">
           <property name="rightMargin">
            <number>0</number>
@@ -1347,9 +1207,6 @@ hr { height: 1px; border-width: 0; }
               </property>
               <property name="resizeMode">
                <enum>QListView::Fixed</enum>
-              </property>
-              <property name="itemAlignment">
-               <set>Qt::AlignCenter</set>
               </property>
               <item>
                <property name="text">
@@ -1538,20 +1395,37 @@ hr { height: 1px; border-width: 0; }
           </item>
          </layout>
         </item>
-        <item row="12" column="0">
-         <spacer name="verticalSpacer_5">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+        <item row="7" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_16">
+          <property name="rightMargin">
+           <number>0</number>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_42">
+            <item>
+             <widget class="QPushButton" name="distributionDensityBtn">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>График f(x)</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </item>
-        <item row="9" column="0">
+        <item row="8" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_18">
           <property name="bottomMargin">
            <number>0</number>
@@ -1568,6 +1442,18 @@ hr { height: 1px; border-width: 0; }
           </item>
           <item>
            <widget class="QTableWidget" name="tableResults_5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>175</height>
+             </size>
+            </property>
             <property name="verticalScrollBarPolicy">
              <enum>Qt::ScrollBarAlwaysOff</enum>
             </property>
@@ -1577,6 +1463,21 @@ hr { height: 1px; border-width: 0; }
             <property name="sizeAdjustPolicy">
              <enum>QAbstractScrollArea::AdjustToContents</enum>
             </property>
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <property name="tabKeyNavigation">
+             <bool>false</bool>
+            </property>
+            <property name="dragDropOverwriteMode">
+             <bool>false</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::NoSelection</enum>
+            </property>
+            <attribute name="horizontalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
             <attribute name="horizontalHeaderCascadingSectionResizes">
              <bool>true</bool>
             </attribute>
@@ -1586,105 +1487,137 @@ hr { height: 1px; border-width: 0; }
             <attribute name="horizontalHeaderDefaultSectionSize">
              <number>135</number>
             </attribute>
+            <attribute name="horizontalHeaderHighlightSections">
+             <bool>false</bool>
+            </attribute>
             <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
              <bool>false</bool>
             </attribute>
             <attribute name="horizontalHeaderStretchLastSection">
-             <bool>true</bool>
+             <bool>false</bool>
+            </attribute>
+            <attribute name="verticalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="verticalHeaderHighlightSections">
+             <bool>false</bool>
             </attribute>
             <attribute name="verticalHeaderStretchLastSection">
              <bool>false</bool>
             </attribute>
             <column>
              <property name="text">
-              <string>xв</string>
+              <string>New Column</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>Dв</string>
+              <string>New Column</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>сигма в</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>a*</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>сигма*</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Х(набл)2</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string>Х(крит)2</string>
+              <string>New Column</string>
              </property>
             </column>
            </widget>
           </item>
          </layout>
         </item>
+        <item row="3" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_35">
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <spacer name="horizontalSpacer_72">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelK_5">
+            <property name="text">
+             <string>Результат k (число степеней свободы)</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineK_5">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="formulaK_5">
+            <property name="text">
+             <string>фотка формулы числа степеней свободы</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_71">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0">
+         <spacer name="verticalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="11" column="0">
+         <spacer name="verticalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
        </layout>
       </widget>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QGroupBox" name="groupBox">
-      <property name="title">
-       <string/>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="firstTaskBtn">
-         <property name="text">
-          <string>Задание 1</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="secondTaskBtn">
-         <property name="text">
-          <string>Задание 2</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
      </widget>
     </item>
    </layout>

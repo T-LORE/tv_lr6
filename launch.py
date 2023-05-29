@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QMessageBox, Q
 from PySide6.QtCore import Slot, Signal, Qt
 from PySide6.QtGui import QIcon, QPixmap
 from qpixmapCreator import mathTex_to_QPixmap, mathTex_to_QPixmap_system
-from workingWithRowData import getVariationRow, getFrequencyRow, RowType, getX, getD, getSigma, getS, split, getLamda, getTheoreticalProbability, gethi2ObservedArray, libGethi2CriticalArray
+from workingWithRowData import *
 import numpy as np
 import pyqtgraph as pg
 
@@ -79,9 +79,10 @@ class MainWindow(QMainWindow):
         # Задание 1
         self.ui.firstTaskBtn.clicked.connect(lambda x: (self.setCurrentMode(0)))
         self.ui.openFileBtn_1.clicked.connect(self.openFileBtnClicked_1)
+        self.ui.distributionDensityBtn.clicked.connect(self.relativeFrequencyHistogram2)
         """
         self.ui.frequencyHistogramBtn_2.clicked.connect(self.frequencyHistogram2)
-        self.ui.relativeFrequencyHistogramBtn_2.clicked.connect(self.relativeFrequencyHistogram2)
+        
         """
         
         #Задание 2
@@ -191,63 +192,167 @@ class MainWindow(QMainWindow):
         fileName, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Текстовый файл (*.txt)")
         if fileName:
             #Открытие файла
-            file = open(fileName, 'r')
+            #Выбор ряда (дискретный или интервальынй)
+            if (self.ui.listRowType_5.currentRow() == 0):
+                #Дискретный                
+                file = open(fileName, 'r')
+                #Чтение массива целых чисел из файла
+                array = np.loadtxt(file)
+                #Закрытие файла
+                file.close()
+                
+                #Вывод массива чисел в виджет через запятую
+                self.ui.fileBuffer_3.setText(np.array2string(array, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[','').replace(']', ''))                      
+                #Получить кол-во интервалов от пользователя
+                try:
+                    self.intervalCount = int(self.ui.lineIntervalCount.text())
+                except ValueError:
+                    print("Неверно введено кол-во интервалов")
+                    return
+                
+                self.intervalRow = split(array, self.intervalCount)
+                print("intervalRow: ", self.intervalRow)
+                
+            elif (self.ui.listRowType_5.currentRow() == 1):
+                #Интервальный
+                file = open(fileName, 'r')
+                self.intervalRow = np.genfromtxt(fileName, delimiter=',', names=True)
+                #Округлить интервалы
+                self.intervalRow["start"] = [roundValue(i) for i in self.intervalRow["start"]]
+                self.intervalRow["end"] = [roundValue(i) for i in self.intervalRow["end"]]
+                self.groupRow = {
+                'numbers': [],
+                'numerators': [],
+                'denominator': sum(self.intervalRow['frequency'])
+                }
             
-            #Чтение массива целых чисел из файла
-            self.currentArray = np.loadtxt(file)
+                for i in range(len(self.intervalRow['start'])):
+                    self.groupRow['numbers'].append((self.intervalRow['start'][i] + self.intervalRow['end'][i]) / 2)
+                    self.groupRow['numerators'].append(self.intervalRow['frequency'][i])
+                    
+                    #Создать массив группированного ряда  
+                array = np.repeat(self.groupRow['numbers'], self.groupRow['numerators'])
             
-            #Закрытие файла
-            file.close()
+            self.showIntervalRow(self.ui.rowsTable_1_1)
             
-            #Вывод массива чисел в виджет через запятую
-            self.ui.fileBuffer_2.setText(np.array2string(self.currentArray, formatter={'float_kind':lambda x: "%.1f" % x}).replace('[','').replace(']', ''))                      
-                        
-            #Получить кол-во интервалов от пользователя
-            try:
-                self.intervalCount = int(self.ui.userIntervalCount.text())
-            except ValueError:
-                print("Неверно введено кол-во интервалов")
-                return
             
-            try:
-                # self.intervalRow = {
-                # 'start' : [],
-                # 'end' : [],
-                # 'frequency' : []
-                # }
-                self.intervalRow = split(self.currentArray, self.intervalCount)
-            except ValueError as e:
-                print(e)
-                return
-            print("intervalRow: ", self.intervalRow)      
-            #Вывести интервальный ряд
-            self.showIntervalRow(self.ui.intervalRow2)
             
-            #Вывести группированный ряд
-            self.showGroupRow(self.ui.groupRow2)
+            #Массив заполнения таблицы:
+            tableHeaders = []
+            tableContent = []
+            fontSize = 14         
+            #X выборочное
+            x = roundValue(getX(array))
+            formulaX = mathTex_to_QPixmap(r"$x_{в}$", fontSize)
+            tableHeaders.append(formulaX)
+            tableContent.append(x)
             
-            #Создать массив группированного ряда  
-            array = np.repeat(self.groupRow['numbers'], self.groupRow['numerators'])
+            # D выборочное
+            d = roundValue(getD(array))
+            formulaD = mathTex_to_QPixmap(r"$D_{в}$", fontSize)
+            tableHeaders.append(formulaD)
+            tableContent.append(d)
             
-            #Вывести D выборочное
-            self.ui.lineD_2.setText(str(roundValue(getD(array))))
-            #Вывести x выборочное
-            self.ui.lineX_2.setText(str(roundValue(getX(array))))
-            #Вывести сигма выборочной
-            self.ui.lineSigma_2.setText(str(roundValue(getSigma(array))))
-            #Вывести результат aStar для нормального закона распределения
-            self.aStar = roundValue(getX(array))
-            self.ui.lineAStar.setText(str(self.aStar))
+            # Сигма выборочная
+            sigma = roundValue(getSigma(array))
+            formulaSigma = mathTex_to_QPixmap(r"$\sigma_{в}$", fontSize)
+            tableHeaders.append(formulaSigma)
+            tableContent.append(sigma)
             
-            #Вывести результат sigmaStar для нормального закона распределения
-            self.sigmaStar = roundValue(getSigma(array))
-            self.ui.lineSigmaStar.setText(str(self.sigmaStar))
+            # aStar
+            aStar = roundValue(getX(array))
+            formulaAStar = mathTex_to_QPixmap(r"$a^{*}$", fontSize)
+            tableHeaders.append(formulaAStar)
+            tableContent.append(aStar)
             
+            # sigmaStar
+            sigmaStar = roundValue(getSigma(array))
+            formulaSigmaStar = mathTex_to_QPixmap(r"$\sigma^{*}$", fontSize)
+            tableHeaders.append(formulaSigmaStar)
+            tableContent.append(sigmaStar)
+            
+            # теоретические вероятности
+            pi = getPi(aStar, sigmaStar, self.intervalRow)
+            #Вывод в таблицу
+            #Заполнить таблицу теоретических вероятностей
+  
+            self.fillTableWithArray(self.ui.rowsTable_1_1, pi, 3)
+            
+            #Хи квадрат наблюдаемое
+            a = float(self.ui.lineAlpha_5.text())
+            #Число степеней свободы
+            k  = len(self.intervalRow['start'])-3
+            self.ui.lineK_5.setText(str(k))
+            
+            hi2Observed = roundValue(sum(gethi2ObservedArray(self.intervalRow['frequency'], pi)))
+            formulaHi2Observed = mathTex_to_QPixmap(r"$\chi^{2}_{набл}$", fontSize)
+            tableHeaders.append(formulaHi2Observed)
+            tableContent.append(hi2Observed)
+            
+            #Хи квадрат критическое
+            hi2Critical = roundValue(libGethi2CriticalArray(k, a))
+            formulaHi2Critical = mathTex_to_QPixmap(r"$\chi^{2}_{кр}$", fontSize)
+            tableHeaders.append(formulaHi2Critical)
+            tableContent.append(hi2Critical)
+            
+            #Вывод в таблицу
+            self.fillTableWithArray(self.ui.tableResults_5, tableHeaders, 0)
+            self.fillTableWithArray(self.ui.tableResults_5, tableContent, 1)
+            
+            if hi2Observed < hi2Critical:
+                outputStr = "Гипотеза согласуется с эксперементальными данными"
+            else:
+                outputStr = "Гипотеза не согласуется с эксперементальными данными"
+            
+            self.ui.lineCompare_1.setText(outputStr)
+            formulaFontSize = 10
+            #Формулы 
+            formulasArray = []
+            x = mathTex_to_QPixmap(r"$\overline{X_{в}} = \frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", formulaFontSize)
+            formulasArray.append(x)
+            #Формула выборочной дисперсии
+            d = mathTex_to_QPixmap(r"$D_{в} = X^{2} - (\overline{X_{в}})^{2}$", formulaFontSize)
+            formulasArray.append(d)
+            #Формула выборочного среднего квадратического отклонения
+            sigma = mathTex_to_QPixmap(r"$\sigma_{в} = \sqrt{D_{в}}$", formulaFontSize)
+            formulasArray.append(sigma)
+            
+            #Формула A* (x выборочное)
+            pixmapAStar = mathTex_to_QPixmap(r"$a^{*} = \frac{1}{n} \sum_{i=1}^{n} x_{i} * m_{i}$", formulaFontSize)
+            formulasArray.append(pixmapAStar)
+            #Формула сигма* (обычная сигма)
+            pixmapSigmaStar = mathTex_to_QPixmap(r"$\sigma^{*} = \sqrt{D_{в}}$", formulaFontSize)
+            formulasArray.append(pixmapSigmaStar)
+            
+            #Формула хи квадрат наблюдаемое
+            pixmapHi2Observed = mathTex_to_QPixmap(r"$\chi^{2}_{набл} = \sum_{i=1}^{k} \frac{(m_{i} - np_{i})^{2}}{np_{i}}$", formulaFontSize)
+            formulasArray.append(pixmapHi2Observed)
+            
+            self.fillTableWithArray(self.ui.tableResults_5, formulasArray, 2)
+            
+            
+
+
+                
+            # #Вывести D выборочное
+            # self.ui.lineD_2.setText(str(roundValue(getD(array))))
+            # #Вывести x выборочное
+            # self.ui.lineX_2.setText(str(roundValue(getX(array))))
+            # #Вывести сигма выборочной
+            # self.ui.lineSigma_2.setText(str(roundValue(getSigma(array))))
+            # #Вывести результат aStar для нормального закона распределения
+            # self.aStar = roundValue(getX(array))
+            # self.ui.lineAStar.setText(str(self.aStar))
+            
+            # #Вывести результат sigmaStar для нормального закона распределения
+            # self.sigmaStar = roundValue(getSigma(array))
+            # self.ui.lineSigmaStar.setText(str(self.sigmaStar))
+                
             # Плотность нормального закона распределения через лямбда функцию испльзуя библиотеку scipy
-            self.densityFuncPtr = lambda x: stats.norm.pdf(x, self.aStar, self.sigmaStar)
-            
+            self.densityFuncPtr = lambda x: stats.norm.pdf(x, aStar, sigmaStar)
+                
             # Вывести формулу плотности нормального закона распределения в latex формате с подставленными значениями aStar и sigmaStar
-            self.setLatexForNormalDensity(self.ui.normalLawDensityLatex_2, self.aStar, self.sigmaStar) 
+            self.setLatexForNormalDensity(self.ui.densityFunction, aStar, sigmaStar) 
     
     @Slot()
     def showVariationRow(self):
@@ -599,7 +704,7 @@ class MainWindow(QMainWindow):
             for i in range(len(array)):
                 newItem = QTableWidgetItem("")
                 newItem.setData(Qt.DecorationRole, array[i])
-                tableWidget.setItem(2, i, newItem)
+                tableWidget.setItem(row, i, newItem)
         else:
              for i in range(len(array)):
                 tableWidget.setItem(row, i, QTableWidgetItem(str(array[i])))
