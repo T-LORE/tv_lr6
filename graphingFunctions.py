@@ -300,7 +300,7 @@ def renderComplexHistogram(histogramFunction, densityFunc, xLabel="", yLabel="",
     meanY = [ i - yDelta for i in meanY ]
     
     #Рисуем
-    subPlot.plot(meanX, meanY, color="red", linewidth=width, zorder=6)
+    subPlot.plot(meanX, meanY, color=color, ls=":", linewidth=width, zorder=6)
     #Пунктирные линии к точкам
     drawLinesToPoints(subPlot, meanX, meanY, dashColor, dashAlpha, dashWidth, style="--", orientation="both", zorder=5)
     
@@ -313,7 +313,7 @@ def renderComplexHistogram(histogramFunction, densityFunc, xLabel="", yLabel="",
     densityY = [ i - yDelta for i in densityY ]
     
     #Рисуем
-    subPlot.plot(densityX, densityY, color="blue", linewidth=width, zorder=6)
+    subPlot.plot(densityX, densityY, color=color, ls="--", linewidth=width, zorder=6)
     
     #Отмечаем точки
     setTicks(subPlot, allX, xDelta, allY, yDelta, tickFontSize=tickFontSize)
@@ -341,7 +341,7 @@ def renderComplexPolygon(x, y, densityFunc, xLabel="", yLabel="", color="black",
     densityY = [ i - yDelta for i in densityY ]
     
     #Рисуем
-    subPlot.plot(densityX, densityY, color="blue", linewidth=width, zorder=6)
+    subPlot.plot(densityX, densityY, color=color, ls="--", linewidth=width, zorder=6)
     
     setTicks(subPlot, x, xDelta, y, yDelta, tickFontSize=tickFontSize)
     
