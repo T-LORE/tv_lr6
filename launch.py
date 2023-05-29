@@ -363,7 +363,7 @@ class MainWindow(QMainWindow):
             pixmapHi2Observed = mathTex_to_QPixmap(r"$\sum_{i=1}^{k} \frac{(m_{i} - np_{i})^{2}}{np_{i}}$", formulaFontSize-1)
             formulasArray.append(pixmapHi2Observed)
             
-            self.fillTableWithArray(self.ui.tableResults_5, formulasArray, 2)
+            self.fillTableWithArray(self.ui.tableResults_5, formulasArray, 2, stretchVertical=False)
                 
             # Плотность нормального закона распределения через лямбда функцию испльзуя библиотеку scipy
             self.densityFuncPtr = lambda x: stats.norm.pdf(x, aStar, sigmaStar)
