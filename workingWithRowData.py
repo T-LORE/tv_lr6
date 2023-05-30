@@ -132,8 +132,8 @@ def split(arr, maxIntervals):
     }
     
     for i in range(maxIntervals):
-        intervals['start'].append(arr[0] + diff * i)
-        intervals['end'].append(arr[0] + diff * (i + 1))
+        intervals['start'].append(round(arr[0] + diff * i, 3))
+        intervals['end'].append(round(arr[0] + diff * (i + 1),3))
         intervals['frequency'].append(0)
         
     for i in range(len(arr)):
