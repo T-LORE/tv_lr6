@@ -148,6 +148,9 @@ class MainWindow(QMainWindow):
                          "(ni - npi)**2 / npi" : r"$\frac{(n_{i} - np_{i})^{2}}{np_{i}}$"}
             
             #Заполнить таблицу групп. ряда
+            #Очистить перед заполнением
+            self.clearTable(self.ui.rowsTable_2_1)
+            #Заполнить
             pix1 = mathTex_to_QPixmap(latexStrs["xi"], 16)
             self.fillTableWithArray(self.ui.rowsTable_2_1, [pix1] + [ i for i in self.puasonRow["x"] ], 0)
             pix2 = mathTex_to_QPixmap(latexStrs["ni"], 16)
@@ -158,7 +161,7 @@ class MainWindow(QMainWindow):
             self.ui.lineLambda.setText(str(roundValue(self.lambd)))
             
             #Добавить в формулу конкретное значение лямбды 
-            pPixmap = mathTex_to_QPixmap(r"$P_{i} = P(X=x_{i}) = \frac{\lambda^{x_{i}} \cdot e^{-\lambda}}{x_{i}!} =" + r"\frac{" + str(self.lambd) + r"^{x_{i}} \cdot e^{-" + str(self.lambd) + r"}}{x_{i}!}$", 16)
+            pPixmap = mathTex_to_QPixmap(r"$P_{i} = P(X=x_{i}) = \frac{\lambda^{x_{i}} \cdot e^{-\lambda}}{x_{i}!} =" + r"\frac{" + str(roundValue(self.lambd)) + r"^{x_{i}} \cdot e^{-" + str(roundValue(self.lambd)) + r"}}{x_{i}!}$", 16)
             self.ui.pFormula.setPixmap(pPixmap)
             
             #Вычислить значения для известного групп. ряда
@@ -171,6 +174,9 @@ class MainWindow(QMainWindow):
             tableData = { "xi" : self.puasonRow["x"], "mi" : self.puasonRow["m"],  "pi" : pi, "n*pi" : npi, "(ni - npi)**2" : complex1, "(ni - npi)**2 / npi" : complex2}
             
             #Заполнить таблицу с вычисленными данными
+            #Очистить перед заполнением
+            self.clearTable(self.ui.rowsTable_2_2)
+            #Заполнить            
             rowToFill = int(0)
             for key, array in tableData.items():
                 headerPixmap = mathTex_to_QPixmap(latexStrs[key], 16)
@@ -205,6 +211,9 @@ class MainWindow(QMainWindow):
         #Выбор файла с помощью диалогового окна QfileDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Текстовый файл (*.txt)")
         if fileName:
+            self.clearTable(self.ui.rowsTable_1_1)
+            # self.ui.tableResults_5.clear()
+            # self.prepareForFirstTask()
             #Открытие файла
             #Выбор ряда (дискретный или интервальынй)
             if (self.ui.listRowType_5.currentRow() == 0):
@@ -212,7 +221,7 @@ class MainWindow(QMainWindow):
                 file = open(fileName, 'r')
                 #Чтение массива целых чисел из файла
                 array = np.loadtxt(file)
-                #Закрытие файла
+                #Закрытие файлаn
                 file.close()
                 
                 #Вывод массива чисел в виджет через запятую
@@ -323,7 +332,8 @@ class MainWindow(QMainWindow):
             rowIndex = int(0)
             for key, value in tableData.items():
                 headerPixmap = mathTex_to_QPixmap(latexHeaderData[key], 20) 
-                self.fillTableWithArray(self.ui.rowsTable_1_1, [headerPixmap] + [i for i in value], rowIndex, stretchVertical = False)
+                toFIll = [headerPixmap] + [i for i in value]
+                self.fillTableWithArray(self.ui.rowsTable_1_1, toFIll, rowIndex, stretchVertical = False)
                 rowIndex += 1
             #Вывести результат сравнения
             self.ui.formulaXComparasion_1.setPixmap(comparasionPixmap)
@@ -381,7 +391,7 @@ class MainWindow(QMainWindow):
         
         #Хи квадрат наблюдаемое
         hi2Observed = mathTex_to_QPixmap(r"$\chi^{2}_{набл}$", headersFontSize)
-        formulaHi2Observed = mathTex_to_QPixmap(r"$\sum_{i=1}^{k} \frac{(m_{i} - np_{i})^{2}}{np_{i}}$", formulaFontSize-1)
+        formulaHi2Observed = mathTex_to_QPixmap(r"$\sum_{i=1}^{m} \frac{(m_{i} - np_{i})^{2}}{np_{i}}$", formulaFontSize-1)
         tableHeaders.append(hi2Observed)
         tableFormulas.append(formulaHi2Observed)
         
@@ -740,6 +750,11 @@ class MainWindow(QMainWindow):
         widget.setPixmap(pixmap.scaled(widget.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
         #widget.setPixmap(pixmap) 
         
+    def clearTable(self,tableWidget : QTableWidget):
+        tableWidget.clear()
+        tableWidget.setRowCount(0)
+        tableWidget.setColumnCount(0)
+        
     @Slot()
     def fillTableWithArray(self,tableWidget : QTableWidget, array, row, stretchVertical = True, stretchHorizontal = True, ignoreVertical = False):
         
@@ -780,6 +795,10 @@ class MainWindow(QMainWindow):
     @Slot()
     def setLatexForNormalDensity(self, widget, aStar, sigmaStar):
         
+        #Ощая формула
+        normalFormula = r"$f(x)= \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-a)^2}{2\sigma^2}} = "
+        
+        
         firstFraction = r"\frac{1}{" + str(sigmaStar) + r"\sqrt{2\pi}}"
         
         exponentDegree = r"{-\frac{(x-" + str(aStar) + r")^2}{2 * " + str(sigmaStar) + r"^2}}"
@@ -787,8 +806,13 @@ class MainWindow(QMainWindow):
         exponent = r"e^{" + exponentDegree + r"}"
         
         densityFormula = r"$f(x)= " + firstFraction + exponent + r"$"
-      
-        pixmap = mathTex_to_QPixmap_system(densityFormula, 50)
+        
+        normalFormula += firstFraction
+        normalFormula += exponent
+        normalFormula+=r"$"
+        
+        
+        pixmap = mathTex_to_QPixmap_system(normalFormula, 50)
         widget.setPixmap(pixmap.scaled(widget.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
         
         
